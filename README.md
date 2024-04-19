@@ -162,7 +162,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie?orderby=year&limit=37&offset=8](api/movie?orderby=year&limit=37&offset=8)
+> exemple : [/video/api/movie?orderby=year&limit=37&offset=8](/video/api/movie?orderby=year&limit=37&offset=8)
 
 ```
 	method GET
@@ -172,7 +172,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie/id/1127?detailed=true](api/movie/id/1127?detailed=true)
+> exemple : [/video/api/movie/id/1127?detailed=true](/video/api/movie/id/1127?detailed=true)
 
 ```
 	method GET
@@ -181,7 +181,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie/id/1127/director](api/movie/id/1127/director)
+> exemple : [/video/api/movie/id/1127/director](/video/api/movie/id/1127/director)
 
 ```
 	method GET
@@ -190,7 +190,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie/id/1127/category](api/movie/id/1127/category)
+> exemple : [/video/api/movie/id/1127/category](/video/api/movie/id/1127/category)
 
 ```
 	method GET
@@ -200,7 +200,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie/title/\*glace\*age\*](api/movie/title/*glace*age*)
+> exemple : [/video/api/movie/title/\*glace\*age\*](/video/api/movie/title/*glace*age*)
 
 ```
 	method GET
@@ -210,7 +210,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie/year/2020](api/movie/year/2020)
+> exemple : [/video/api/movie/year/2020](/video/api/movie/year/2020)
 
 ```
 	method GET
@@ -220,7 +220,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/movie/rating/3.5?orderby=year&limit=10&offset=90](api/movie/rating/3.5?orderby=year&limit=10&offset=90)
+> exemple : [/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90](/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90)
 
 ```
 	method PUT
@@ -305,7 +305,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/director?orderby=name&limit=12&offset=0](api/director?orderby=name&limit=12&offset=0)
+> exemple : [/video/api/director?orderby=name&limit=12&offset=0](/video/api/director?orderby=name&limit=12&offset=0)
 
 ```
 	method GET
@@ -315,7 +315,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/director/id/46](api/director/id/46)
+> exemple : [/video/api/director/id/46](/video/api/director/id/46)
 
 ```
 	method GET
@@ -325,7 +325,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/director/id/46/movie](api/director/id/46/movie)
+> exemple : [/video/api/director/id/46/movie](/video/api/director/id/46/movie)
 
 ```
 	method GET
@@ -335,7 +335,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/director/name/\*sp\*](api/director/name/*sp*)
+> exemple : [/video/api/director/name/\*sp\*](/video/api/director/name/*sp*)
 
 ```
 	method GET
@@ -345,7 +345,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/director/country/US](api/director/country/US)
+> exemple : [/video/api/director/country/US](/video/api/director/country/US)
 
 ```
 	method PUT
@@ -417,7 +417,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/category?orderby=tag&limit=6&offset=0](api/category?orderby=tag&limit=6&offset=0)
+> exemple : [/video/api/category?orderby=tag&limit=6&offset=0](/video/api/category?orderby=tag&limit=6&offset=0)
 
 ```
 	method GET
@@ -427,7 +427,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/category/id/5](api/category/id/5)
+> exemple : [/video/api/category/id/5](/video/api/category/id/5)
 
 ```
 	method GET
@@ -437,7 +437,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/category/id/5/movie?orderby=year&limit=20&offset=230](api/category/id/5/movie?orderby=year&limit=20&offset=230)
+> exemple : [/video/api/category/id/5/movie?orderby=year&limit=20&offset=230](/video/api/category/id/5/movie?orderby=year&limit=20&offset=230)
 
 ```
 	method PUT
