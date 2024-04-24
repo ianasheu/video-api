@@ -195,26 +195,31 @@ class MovieCollectionModel implements CollectionModelInterface {
 	/*
 	 * Lire des films par titre
 	 */
-	public function readByTitle($title, $orderby=null, $limit=null, $offset=null, $simplesearch=false) : array {
+	public function readByTitle($title, $orderby=null, $limit=null, $offset=null) : array {
 
-		if ($simplesearch) {
-			$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE title LIKE :title';
-		} else {
-			$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE;
-			$title = trim($title, '%');
-			$words = explode('%', $title);
-			$sql .= " WHERE title LIKE '%".$words[0]."%'";
-			if (count($words)>1) {
-				for ($i=1; $i<count($words); $i++) {
-					$sql .= " AND title LIKE '%" . $words[$i] . "%'";
-				}
+		$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE;
+		$words = trim($title, '%');
+		$words = explode('%', $words);
+		if (count($words) == 1) {
+			$sql .= " WHERE title LIKE :title";
+		} else if (count($words) > 1) {
+			$sql .= " WHERE title LIKE :words0";
+			for ($i=1; $i<count($words); $i++) {
+				$sql .= " AND title LIKE :words" . $i;
 			}
 		}
 		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
-		if ($simplesearch) $query->bindValue('title', $title);
+		if (count($words) == 1) {
+			$query->bindValue('title', $title);
+		} else if (count($words) > 1) {
+			$query->bindValue('words0', '%'.$words[0].'%');
+			for ($i=1; $i<count($words); $i++) {
+				$query->bindValue('words'.$i, '%'.$words[$i].'%');
+			}
+		}
 		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
 		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
 		$query->execute();

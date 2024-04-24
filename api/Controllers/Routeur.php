@@ -19,7 +19,7 @@ class Routeur {
 	private array $filter;
 	private object $content;
 	private $connected;
-	private array $controllers;
+	private array $controller;
 
 	/*
 	 * Constructeur
@@ -52,14 +52,14 @@ class Routeur {
 		} else {
 			$this->connected = false;
 		}
-		$this->controllers = array();
+		$this->controller = array();
 	}
 	
 	/*
 	 * Ajouter un controller
 	 */
 	public function addController(ControllerInterface $controller) : void {
-		array_push($this->controllers, $controller);
+		array_push($this->controller, $controller);
 	}
 
 	/*
@@ -70,7 +70,7 @@ class Routeur {
 		$response_content = null;
 		$controller = null;
 		if (is_array($this->url) && !empty($this->url)) {
-			foreach ($this->controllers as $ctrl) {
+			foreach ($this->controller as $ctrl) {
 				if ($ctrl->getRoute() == $this->url[0]) {
 					$controller = $ctrl;
 					break;

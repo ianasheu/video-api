@@ -2,12 +2,12 @@
 
 ## API REST EN PHP POUR BASE DE DONNEES SUR DES FILMS
 
-Le premier travail procède en un découplage d'avec la base de données. Pour cela, plutôt que d'utiliser un framework, j'ai envie de développer l'api rest moi-même en php afin de couvrir les problématiques.
+Pour l'exercice, je veux reprendre un ancien dev sur l'ajax en JS : http://ianasheu.free.fr/video. La page d'origine permet des recherches sur des films. La future page sera faite avec React. Le premier travail procède en un découplage d'avec la base de données. Pour cela, plutôt que d'utiliser un framework, j'ai envie de développer l'api rest moi-même en php afin de couvrir les problématiques.
 
 
 ## SCHEMA RELATIONNEL DE LA BASE DE DONNEES
 
-![](video-api-bdd-schema.png "")
+![](https://www.ianasheu.com/video/video-api-bdd-schema.png "")
 > _video-api-bdd-schema.png_
 
 
@@ -77,15 +77,21 @@ Afin de limiter les messages d'erreur, la base de données est configurée pour 
 
 ## DIAGRAMME DE CLASSES UML DU CODE PHP DE L'API
 
-![](video-api-uml.drawio.svg "")
+![](https://www.ianasheu.com/video/video-api-uml.drawio.svg "")
 > _video-api-uml.drawio.svg_
 
 Commentaires : Le type des propriétés de classe n'est pas renseigné s'il est scalaire (booléen, entier, nombre décimal, chaîne de caractères). En revanche, il est renseigné si c'est un tableau ou un objet. Il en sera de même pour les types des arguments des méthodes de classe ainsi que les types de valeur de retour. De plus, le type de retour d'une méthode qui ne retourne rien sera indique avec void (sauf pour les constructeurs). Ce n'est donc pas du mode strict.
 
 Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive les fichiers Controllers/users_config.php et Models/db_config_ovh.php. De plus, sont aussi abscents du diagramme les fichiers .htaccess, index.php, Autoloader.php, Models/MovieItemModel.php, Models/DirectorItemModel.php, Models/CategoryItemModel.php et Views/json_view.php.
 
+> sources : [video-api-php.zip](https://www.ianasheu.com/video/video-api-php.zip)
+
 
 ## DESCRIPTION DES APPELS
+
+#### DOMAINE
+
+> https://www.ianasheu.com
 
 #### RACINE DE L API
 > /video/api
@@ -162,7 +168,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie?orderby=year&limit=37&offset=8](/video/api/movie?orderby=year&limit=37&offset=8)
+> exemple : [/video/api/movie?orderby=year&limit=37&offset=8](https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8)
 
 ```
 	method GET
@@ -172,7 +178,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/id/1127?detailed=true](/video/api/movie/id/1127?detailed=true)
+> exemple : [/video/api/movie/id/1127?detailed=true](https://www.ianasheu.com/video/api/movie/id/1127?detailed=true)
 
 ```
 	method GET
@@ -181,7 +187,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/id/1127/director](/video/api/movie/id/1127/director)
+> exemple : [/video/api/movie/id/1127/director](https://www.ianasheu.com/video/api/movie/id/1127/director)
 
 ```
 	method GET
@@ -190,7 +196,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/id/1127/category](/video/api/movie/id/1127/category)
+> exemple : [/video/api/movie/id/1127/category](https://www.ianasheu.com/video/api/movie/id/1127/category)
 
 ```
 	method GET
@@ -200,7 +206,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/title/\*glace\*age\*](/video/api/movie/title/*glace*age*)
+> exemple : [/video/api/movie/title/\*glace\*age\*](https://www.ianasheu.com/video/api/movie/title/*glace*age*)
 
 ```
 	method GET
@@ -210,7 +216,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/year/2020](/video/api/movie/year/2020)
+> exemple : [/video/api/movie/year/2020](https://www.ianasheu.com/video/api/movie/year/2020)
 
 ```
 	method GET
@@ -220,7 +226,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90](/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90)
+> exemple : [/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90](https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90)
 
 ```
 	method PUT
@@ -305,7 +311,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director?orderby=name&limit=12&offset=0](/video/api/director?orderby=name&limit=12&offset=0)
+> exemple : [/video/api/director?orderby=name&limit=12&offset=0](https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0)
 
 ```
 	method GET
@@ -315,7 +321,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director/id/46](/video/api/director/id/46)
+> exemple : [/video/api/director/id/46](https://www.ianasheu.com/video/api/director/id/46)
 
 ```
 	method GET
@@ -325,7 +331,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director/id/46/movie](/video/api/director/id/46/movie)
+> exemple : [/video/api/director/id/46/movie](https://www.ianasheu.com/video/api/director/id/46/movie)
 
 ```
 	method GET
@@ -335,7 +341,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director/name/\*sp\*](/video/api/director/name/*sp*)
+> exemple : [/video/api/director/name/\*sp\*](https://www.ianasheu.com/video/api/director/name/*sp*)
 
 ```
 	method GET
@@ -345,7 +351,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director/country/US](/video/api/director/country/US)
+> exemple : [/video/api/director/country/US](https://www.ianasheu.com/video/api/director/country/US)
 
 ```
 	method PUT
@@ -417,7 +423,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/category?orderby=tag&limit=6&offset=0](/video/api/category?orderby=tag&limit=6&offset=0)
+> exemple : [/video/api/category?orderby=tag&limit=6&offset=0](https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0)
 
 ```
 	method GET
@@ -427,7 +433,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/category/id/5](/video/api/category/id/5)
+> exemple : [/video/api/category/id/5](https://www.ianasheu.com/video/api/category/id/5)
 
 ```
 	method GET
@@ -437,7 +443,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/category/id/5/movie?orderby=year&limit=20&offset=230](/video/api/category/id/5/movie?orderby=year&limit=20&offset=230)
+> exemple : [/video/api/category/id/5/movie?orderby=year&limit=20&offset=230](https://www.ianasheu.com/video/api/category/id/5/movie?orderby=year&limit=20&offset=230)
 
 ```
 	method PUT

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ianasheu.com">
+<meta name="author" content="contact@ianasheu.com">
+<title>README.md</title>
+<style>
+html, body { font-family: sans-serif; color: #44444; background-color: #F8F8F8; }
+body { width:96%; margin-left:auto; margin-right:auto; }
+h1 { text-shadow: 2px 3px 1px #E0E0E0; }
+pre { color: #00000; background-color: #E4E8EC; border-left: 2px #C4C8CC solid; overflow-x: auto; }
+div { overflow: auto; }
+
+@media screen (max-width: 512px) {
+	html, body { font-size: 16px; }
+	pre,code { font-size: 15px; }
+}
+@media screen and (min-width: 512px) and (max-width: 1024px) {
+	html, body { font-size: 17px; }
+	pre,code { font-size: 16px; }
+}
+@media screen and (min-width: 1024px) and (max-width: 2048px) {
+	html, body { font-size: 18px; }
+	pre,code { font-size: 17px; }
+}
+@media screen and (min-width: 2048px) {
+	html, body { font-size: 19px; }
+	pre,code { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<h1>VIDEO-API</h1>
+<h2>API REST EN PHP POUR BASE DE DONNEES SUR DES FILMS</h2>
+<p>Pour l'exercice, je veux reprendre un ancien dev sur l'ajax en JS : <a href="http://ianasheu.free.fr/video">http://ianasheu.free.fr/video</a>. La page d'origine permet des recherches sur des films. La future page sera faite avec React. Le premier travail procède en un découplage d'avec la base de données. Pour cela, plutôt que d'utiliser un framework, j'ai envie de développer l'api rest moi-même en php afin de couvrir les problématiques.</p>
+<br>
+<h2>SCHEMA RELATIONNEL DE LA BASE DE DONNEES</h2>
+<div><img src="https://www.ianasheu.com/video/video-api-bdd-schema.png" title="video-api-bdd-schema.png" alt="video-api-bdd-schema.png"></div>
+<blockquote>
+<p><em>video-api-bdd-schema.png</em></p>
+<br>
+</blockquote>
+<h2>REQUETE SQL DE CREATION DES TABLES DE LA BASE DE DONNEES</h2>
+<pre><code>
+	CREATE TABLE `movie` (
+		`id` int NOT NULL auto_increment,
+		`title` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+		`year` int DEFAULT NULL,
+		`rating` float DEFAULT NULL,
+		`poster` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+		`allocine` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+		CONSTRAINT `movie_pk` PRIMARY KEY (`id`),
+		CONSTRAINT `movie_u` UNIQUE (`id`),
+		INDEX (`title`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+</code></pre>
+<br>
+<pre><code>
+	CREATE TABLE `director` (
+		`id` int NOT NULL auto_increment,
+		`name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+		`country` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+		CONSTRAINT `director_pk` PRIMARY KEY (`id`),
+		CONSTRAINT `director_u` UNIQUE (`id`),
+		INDEX (`name`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+</code></pre>
+<blockquote>
+<p>(*) Dans la table des réalisateurs, le champ <em>country</em>, récent, ne contient pas encore de données renseignées dans la base.</p>
+</blockquote>
+<br>
+<pre><code>
+	CREATE TABLE `moviedirector` (
+		`id` int NOT NULL auto_increment,
+		`movie` int NOT NULL,
+		`director` int NOT NULL,
+		CONSTRAINT `moviedirector_pk` PRIMARY KEY (`id`),
+		CONSTRAINT `moviedirector_u` UNIQUE (`id`),
+		CONSTRAINT `movied_fk` FOREIGN KEY (`movie`) REFERENCES `movie` (`id`),
+		CONSTRAINT `director_fk` FOREIGN KEY (`director`) REFERENCES `director` (`id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+</code></pre>
+<br>
+<pre><code>
+	CREATE TABLE `category` (
+		`id` int NOT NULL auto_increment,
+		`tag` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+		CONSTRAINT `category_pk` PRIMARY KEY (`id`),
+		CONSTRAINT `category_u` UNIQUE (`id`),
+		INDEX (`tag`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+</code></pre>
+<br>
+<pre><code>
+	CREATE TABLE `moviecategory` (
+		`id` int NOT NULL auto_increment,
+		`movie` int NOT NULL,
+		`category` int NOT NULL,
+		CONSTRAINT `moviecategory_pk` PRIMARY KEY (`id`),
+		CONSTRAINT `moviecategory_u` UNIQUE (`id`),
+		CONSTRAINT `moviec_fk` FOREIGN KEY (`movie`) REFERENCES `movie` (`id`),
+		CONSTRAINT `category_fk` FOREIGN KEY (`category`) REFERENCES `category` (`id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+</code></pre>
+<p>Afin de limiter les messages d'erreur, la base de données est configurée pour tronquer les données si elles dépassent la taille du champ cible.</p>
+<br>
+<h2>DIAGRAMME DE CLASSES UML DU CODE PHP DE L'API</h2>
+<div><img src="https://www.ianasheu.com/video/video-api-uml.drawio.svg" title="video-api-uml.drawio.svg" alt="video-api-uml.drawio.svg"></div>
+<blockquote>
+<p><em>video-api-uml.drawio.svg</em></p>
+</blockquote>
+<p>Commentaires : Le type des propriétés de classe n'est pas renseigné s'il est scalaire (booléen, entier, nombre décimal, chaîne de caractères). En revanche, il est renseigné si c'est un tableau ou un objet. Il en sera de même pour les types des arguments des méthodes de classe ainsi que les types de valeur de retour. De plus, le type de retour d'une méthode qui ne retourne rien sera indique avec void (sauf pour les constructeurs). Ce n'est donc pas du mode strict.</p>
+<p>Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive les fichiers Controllers/users_config.php et Models/db_config_ovh.php. De plus, sont aussi abscents du diagramme les fichiers .htaccess, index.php, Autoloader.php, Models/MovieItemModel.php, Models/DirectorItemModel.php, Models/CategoryItemModel.php et Views/json_view.php.</p>
+<blockquote>
+<p>sources : <a href="https://www.ianasheu.com/video/video-api-php.zip">video-api-php.zip</a></p>
+</blockquote>
+<br>
+<h2>DESCRIPTION DES APPELS</h2>
+<h4>DOMAINE</h4>
+<blockquote>
+<p><a href="https://www.ianasheu.com">https://www.ianasheu.com</a></p>
+</blockquote>
+<h4>RACINE DE L API</h4>
+<blockquote>
+<p>/video/api</p>
+</blockquote>
+<h4>RESSOUCES</h4>
+<blockquote>
+<ul>
+<li>movie</li>
+<li>director</li>
+<li>category</li>
+</ul>
+</blockquote>
+<p>Un content au format json est nécessaire pour les methods POST et PUT. Une authentification basique est demandée pour les methods autres que GET. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.</p>
+<h4>FILTRES</h4>
+<blockquote>
+<ul>
+<li>orderby</li>
+<li>limit</li>
+<li>offset</li>
+<li>detailed</li>
+</ul>
+</blockquote>
+<p>Utilisable pour les methods GET. Le critère passé à orderby doit être une propriété de la ressource avec laquelle il est utilisé. Les valeurs passées à limit et offset doivent être numériques. Les valeurs passées à detailed doivent être true ou false.</p>
+<br>
+<h2>MOVIE</h2>
+<p>Les valeurs pour year et rating doivent être numériques.</p>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/movie
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"title" : "createdMovie",
+				["year" : "releaseYear",]
+				["rating" : "fiveRating",]
+				["poster" : "fileNameJpg",]
+				["allocine" : "idAllocine"]
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/movie/director
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"movie" : "associateMovie",
+				"director" : "associateDirector"
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/movie/category
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"movie" : "associateMovie",
+				"director" : "associateDirector"
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8">/video/api/movie?orderby=year&limit=37&offset=8</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie/id/{id}
+		filtres possibles : detailed
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/1127?detailed=true">/video/api/movie/id/1127?detailed=true</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie/id/{id}/director
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/1127/director">/video/api/movie/id/1127/director</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie/id/{id}/category
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/1127/category">/video/api/movie/id/1127/category</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie/title/{*title*}
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/title/*glace*age*">/video/api/movie/title/*glace*age*</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie/year/{year}
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/year/2020">/video/api/movie/year/2020</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/movie/rating/{rating}
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90">/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>PUT</strong>
+	request
+		/video/api/movie
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"id" : "id",
+				"title" : "updatedTitle",
+				["year" : "releaseYear",]
+				["rating" : "fiveRating",]
+				["poster" : "fileNameJpg",]
+				["allocine" : "idAllocine"]
+			}
+	response
+		202 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/movie/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/movie/id/{id}/director/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/movie/id/{id}/category/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<h2>DIRECTOR</h2>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/director
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"name" : "createdDirector",
+				["country" = "countryCode"]
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/director/movie
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"movie" : "associateMovie",
+				"director" : "associateDirector"
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/director
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0">/video/api/director?orderby=name&limit=12&offset=0</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/director/id/{id}
+		filtres possibles : detailed
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/46">/video/api/director/id/46</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/director/id/{id}/movie
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/46/movie">/video/api/director/id/46/movie</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/director/name/{*name*}
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/name/*sp*">/video/api/director/name/*sp*</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/director/country/{country}
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/country/US">/video/api/director/country/US</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>PUT</strong>
+	request
+		/video/api/director
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"id" : "id",
+				"name" : "updatedName",
+				["country" : "countryCode"]
+			}
+	response
+		202 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/director/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/director/id/{id}/movie/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<h2>CATEGORY</h2>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/category
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"tag" : "createdCategory"
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>POST</strong>
+	request
+		/video/api/category/movie
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"movie" : "associatedMovie",
+				"category" : "associatedCategory"
+			}
+	response
+		201 : newId
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/category
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0">/video/api/category?orderby=tag&limit=6&offset=0</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/category/id/{id}
+		filtres possibles : detailed
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5">/video/api/category/id/5</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>GET</strong>
+	request
+		/video/api/category/id/{id}/movie
+		filtres possibles : orderby, limit, offset
+	response
+		200 : []
+
+</code></pre>
+<blockquote>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5/movie?orderby=year&limit=20&offset=230">/video/api/category/id/5/movie?orderby=year&limit=20&offset=230</a></p>
+</blockquote>
+<br>
+<pre><code>
+	method <strong>PUT</strong>
+	request
+		/video/api/category
+			Authorization : Basic login:password
+			Content-Type : application/json
+			Content : {
+				"id" : "id",
+				"tag" : "updatedTag"
+			}
+	response
+		202 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/category/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<pre><code>
+	method <strong>DELETE</strong>
+	request
+		/video/api/category/id/{id}/movie/id/{id}
+			Authorization : Basic login:password
+	response
+		200 : countRow
+
+</code></pre>
+<br>
+<h2>CODES HTTP REPONSES POSSIBLES</h2>
+<ul>
+<li>200 Ok</li>
+<li>201 Created</li>
+<li>202 Accepted</li>
+<li>400 Bad Request</li>
+<li>401 Unauthorized</li>
+<li>403 Forbidden</li>
+<li>404 Not Found</li>
+<li>405 Method Not Allowed</li>
+<li>503 Service Unavailable</li>
+</ul>
+</body>
+</html>

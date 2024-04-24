@@ -32,7 +32,7 @@ class MovieController implements ControllerInterface {
 	}
 
 	/*
-	 * Effectuer une methode
+	 * Effectuer une requete
 	 */
 	public function perform($method, array $url, array $filter=null, object $content=null, $connected=null) : array {
 
