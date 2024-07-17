@@ -1,8 +1,8 @@
 <?php
 /*---------------------------------------------*
- * 
+ *
  * Singleton de connexion a la base de donnees
- * 
+ *
  *---------------------------------------------*/
 
 namespace api\Models;
@@ -33,7 +33,7 @@ final class Database {
 	/*
 	 * Getter de la connection
 	 */
-	public static function getconnection() : object {
+	public static function getConnection() : object {
 
 		if (!isset(self::$connection) || is_null(self::$connection)) {
 			try {
@@ -41,6 +41,7 @@ final class Database {
 				self::$connection->exec('set names utf8mb4');
 				self::$connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 				self::$connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+				self::$connection->setAttribute(\PDO::MYSQL_ATTR_FOUND_ROWS, true);
 				if (mysqli_connect_errno()) {
 					throw new \Exception('Erreur de connection a la base de donnees.');
 				}
@@ -50,5 +51,11 @@ final class Database {
 			}
 		}
 		return self::$connection;
+	}
+
+	public static function getRowsCount() {
+		$row = self::$connection->query('SELECT FOUND_ROWS();');
+		$count = $row->fetchColumn();
+		return (int) $count;
 	}
 }

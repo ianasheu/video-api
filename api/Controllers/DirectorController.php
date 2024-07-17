@@ -1,8 +1,8 @@
 <?php
 /*----------------------------------*
- * 
+ *
  * Controleur pour les realisateurs
- * 
+ *
  *----------------------------------*/
 
 namespace api\Controllers;
@@ -16,6 +16,7 @@ class DirectorController implements ControllerInterface {
 	private CollectionModelInterface $model;
 	private $response_code;
 	private $response_content;
+	private $response_count;
 
 	/*
 	 * Constructeur
@@ -38,42 +39,51 @@ class DirectorController implements ControllerInterface {
 
 		$this->response_code = 200;
 		$this->response_content = null;
+		$this->response_count = 0;
 
 		$orderby = null;
 		$limit = null;
 		$offset = null;
 		$detailed = null;
+		$filterAvailable = array("orderby", "limit", "offset", "detailed");
 		foreach ($filter as $f) {
 			if (str_contains($f, '=')) {
-				list($k, $v) = explode('=', $f);
-				if ($v != '') {
-					switch ($k){
-						case 'orderby':
-							$orderby = $v;
-							break;
-						case 'limit':
-							$limit = $v;
-							break;
-						case 'offset':
-							$offset = $v;
-							break;
-						case 'detailed':
-							$detailed = $v;
-							break;
-						default:
-							$this->response_code = 400;
-							$this->response_content = 'wrong filter';
-							return [$this->response_code, $this->response_content];
+				list($key, $value) = explode('=', $f);
+				if ($value != '') {
+					if (in_array($key, $filterAvailable)) {
+						unset($filterAvailable[array_search($key, $filterAvailable)]);
+						switch ($key){
+							case 'orderby':
+								$orderby = $value;
+								break;
+							case 'limit':
+								$limit = $value;
+								break;
+							case 'offset':
+								$offset = $value;
+								break;
+							case 'detailed':
+								$detailed = $value;
+								break;
+							default:
+								$this->response_code = 400;
+								$this->response_content = 'wrong filter';
+								return [$this->response_code, $this->response_content, $this->response_count];
+						}
+					} else {
+						$this->response_code = 400;
+						$this->response_content = 'wrong filter';
+						return [$this->response_code, $this->response_content, $this->response_count];
 					}
 				} else {
 					$this->response_code = 400;
 					$this->response_content = 'wrong filter';
-					return [$this->response_code, $this->response_content];
+					return [$this->response_code, $this->response_content, $this->response_count];
 				}
 			} else {
 				$this->response_code = 400;
 				$this->response_content = 'wrong filter';
-				return [$this->response_code, $this->response_content];
+				return [$this->response_code, $this->response_content, $this->response_count];
 			}
 		}
 
@@ -233,7 +243,7 @@ class DirectorController implements ControllerInterface {
 				case 'DELETE':
 					if ($connected) {
 						if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
-							isset($url[3]) && $url[3]=='movie' && 
+							isset($url[3]) && $url[3]=='movie' &&
 							isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
 							if (!$filter) {
 								if (!(array)$content) {
@@ -275,7 +285,7 @@ class DirectorController implements ControllerInterface {
 			$this->response_code = 400;
 			$this->response_content = 'wrong url';
 		}
-		return [$this->response_code, $this->response_content];
+		return [$this->response_code, $this->response_content, $this->response_count];
 	}
 
 	/*
@@ -310,11 +320,12 @@ class DirectorController implements ControllerInterface {
 	 * Obtenir tous les realisateurs
 	 */
 	private function getAll($orderby=null, $limit=null, $offset=null) {
-		$response_content = $this->model->readAll($orderby, $limit, $offset);
+		list($response_content, $response_count) = $this->model->readAll($orderby, $limit, $offset);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());
@@ -325,11 +336,12 @@ class DirectorController implements ControllerInterface {
 	 * Obtenir un realisateur par l id
 	 */
 	private function getById($id, $detailed=null) {
-		$response_content = $this->model->readById($id, $detailed);
+		list($response_content, $response_count) = $this->model->readById($id, $detailed);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());
@@ -340,11 +352,12 @@ class DirectorController implements ControllerInterface {
 	 * Obtenir les films d un realisateur
 	 */
 	private function getMovie($id, $orderby=null, $limit=null, $offset=null) {
-		$response_content = $this->model->readMovie($id, $orderby, $limit, $offset);
+		list($response_content, $response_count) = $this->model->readMovie($id, $orderby, $limit, $offset);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());
@@ -356,11 +369,12 @@ class DirectorController implements ControllerInterface {
 	 */
 	private function getByName($name, $orderby=null, $limit=null, $offset=null) {
 		$name = str_replace('*', '%', $name);
-		$response_content = $this->model->readByName($name, $orderby, $limit, $offset);
+		list($response_content, $response_count) = $this->model->readByName($name, $orderby, $limit, $offset);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());
@@ -371,11 +385,12 @@ class DirectorController implements ControllerInterface {
 	 * Obtenir des realisateurs par pays
 	 */
 	private function getByCountry($country, $orderby=null, $limit=null, $offset=null) {
-		$response_content = $this->model->readByCountry($country, $orderby, $limit, $offset);
+		list($response_content, $response_count) = $this->model->readByCountry($country, $orderby, $limit, $offset);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());

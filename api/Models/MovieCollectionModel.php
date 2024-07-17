@@ -1,8 +1,8 @@
 <?php
 /*-----------------------*
- * 
+ *
  * Modele pour les films
- * 
+ *
  *-----------------------*/
 
 namespace api\Models;
@@ -98,10 +98,19 @@ class MovieCollectionModel implements CollectionModelInterface {
 	/*
 	 * Lire tous les films
 	 */
-	public function readAll($orderby=null, $limit=null, $offset=null) : array {
+	public function readAll($orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE;
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
+		if ($detailed != 'true') {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE;
+		} else {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", director.id, "name", director.name, "country", director.country )), "]") '.
+				'FROM director, moviedirector WHERE director.id = moviedirector.director AND moviedirector.movie = movie.id AND movie.id = movieid ORDER BY director.name ASC) AS directors, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", category.id, "tag", category.tag )), "]") '.
+				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
+				'FROM movie';
+		}
+		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -112,10 +121,22 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				if ($detailed == 'true') {
+					$directors = json_decode($directors);
+					$movie->director = array();
+					foreach ($directors as $d) {
+						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+					}
+					$categories = json_decode($categories);
+					$movie->category = array();
+					foreach ($categories as $c) {
+						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+					}
+				}
 				array_push($this->collection, $movie);
 			}
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -126,21 +147,38 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 */
 	public function readById($id, $detailed=null) : array {
 
-		$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE id = :id;';
+		if ($detailed != 'true') {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE id = :id;';
+		} else {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", director.id, "name", director.name, "country", director.country )), "]") '.
+				'FROM director, moviedirector WHERE director.id = moviedirector.director AND moviedirector.movie = movie.id AND movie.id = movieid ORDER BY director.name ASC) AS directors, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", category.id, "tag", category.tag )), "]") '.
+				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
+				'FROM movie WHERE movie.id = :id';
+		}
 		$query = $this->db->prepare($sql);
-		$query->bindValue('id', $id);
+		$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
 			$row = $query->fetch(\PDO::FETCH_ASSOC);
 			extract($row);
-			$movie = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
+			$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
 			if ($detailed == 'true') {
-				$movie->director = $this->readDirector($id);
-				$movie->category = $this->readCategory($id);
+				$directors = json_decode($directors);
+				$movie->director = array();
+				foreach ($directors as $d) {
+					array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+				}
+				$categories = json_decode($categories);
+				$movie->category = array();
+				foreach ($categories as $c) {
+					array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+				}
 			}
 			array_push($this->collection, $movie);
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -152,9 +190,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 	public function readDirector($id) : array {
 
 		$result = array();
-		$sql = 'SELECT director.id, director.name, director.country FROM director, moviedirector WHERE moviedirector.director = director.id AND moviedirector.movie = :id;';
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS director.id, director.name, director.country FROM director, moviedirector WHERE moviedirector.director = director.id AND moviedirector.movie = :id ORDER BY director.name ASC;';
 		$query = $this->db->prepare($sql);
-		$query->bindValue('id', $id);
+		$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
@@ -163,7 +201,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 				$dir = new DirectorItemModel($id, $name, $country);
 				array_push($result, $dir);
 			}
-			return $result;
+			return [$result, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -175,9 +213,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 	public function readCategory($id) : array {
 
 		$result = array();
-		$sql = 'SELECT category.id, category.tag FROM category, moviecategory WHERE moviecategory.category = category.id AND moviecategory.movie = :id;';
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS category.id, category.tag FROM category, moviecategory WHERE moviecategory.category = category.id AND moviecategory.movie = :id ORDER BY moviecategory.id ASC;';
 		$query = $this->db->prepare($sql);
-		$query->bindValue('id', $id);
+		$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
@@ -186,7 +224,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 				$cat = new CategoryItemModel($id, $tag);
 				array_push($result, $cat);
 			}
-			return $result;
+			return [$result, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -195,28 +233,36 @@ class MovieCollectionModel implements CollectionModelInterface {
 	/*
 	 * Lire des films par titre
 	 */
-	public function readByTitle($title, $orderby=null, $limit=null, $offset=null) : array {
+	public function readByTitle($title, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE;
+		if ($detailed != 'true') {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE;
+		} else {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", director.id, "name", director.name, "country", director.country )), "]") '.
+				'FROM director, moviedirector WHERE director.id = moviedirector.director AND moviedirector.movie = movie.id AND movie.id = movieid ORDER BY director.name ASC) AS directors, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", category.id, "tag", category.tag )), "]") '.
+				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
+				'FROM movie';
+		}
 		$words = trim($title, '%');
 		$words = explode('%', $words);
 		if (count($words) == 1) {
-			$sql .= " WHERE title LIKE :title";
+			$sql .= ' WHERE movie.title LIKE :title';
 		} else if (count($words) > 1) {
-			$sql .= " WHERE title LIKE :words0";
+			$sql .= ' WHERE movie.title LIKE :words0';
 			for ($i=1; $i<count($words); $i++) {
-				$sql .= " AND title LIKE :words" . $i;
+				$sql .= ' OR movie.title LIKE :words' . $i;
 			}
 		}
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
+		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
 		if (count($words) == 1) {
 			$query->bindValue('title', $title);
 		} else if (count($words) > 1) {
-			$query->bindValue('words0', '%'.$words[0].'%');
-			for ($i=1; $i<count($words); $i++) {
+			for ($i=0; $i<count($words); $i++) {
 				$query->bindValue('words'.$i, '%'.$words[$i].'%');
 			}
 		}
@@ -227,10 +273,22 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				if ($detailed == 'true') {
+					$directors = json_decode($directors);
+					$movie->director = array();
+					foreach ($directors as $d) {
+						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+					}
+					$categories = json_decode($categories);
+					$movie->category = array();
+					foreach ($categories as $c) {
+						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+					}
+				}
 				array_push($this->collection, $movie);
 			}
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -239,10 +297,19 @@ class MovieCollectionModel implements CollectionModelInterface {
 	/*
 	 * Lire des films par annee
 	 */
-	public function readByYear($year, $orderby=null, $limit=null, $offset=null) : array {
+	public function readByYear($year, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE year LIKE :year';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
+		if ($detailed != 'true') {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE year LIKE :year';
+		} else {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", director.id, "name", director.name, "country", director.country )), "]") '.
+				'FROM director, moviedirector WHERE director.id = moviedirector.director AND moviedirector.movie = movie.id AND movie.id = movieid ORDER BY director.name ASC) AS directors, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", category.id, "tag", category.tag )), "]") '.
+				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
+				'FROM movie WHERE movie.year LIKE :year';
+		}
+		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -254,10 +321,22 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				if ($detailed == 'true') {
+					$directors = json_decode($directors);
+					$movie->director = array();
+					foreach ($directors as $d) {
+						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+					}
+					$categories = json_decode($categories);
+					$movie->category = array();
+					foreach ($categories as $c) {
+						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+					}
+				}
 				array_push($this->collection, $movie);
 			}
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -266,10 +345,19 @@ class MovieCollectionModel implements CollectionModelInterface {
 	/*
 	 * Lire des films par note
 	 */
-	public function readByRating($rating, $orderby=null, $limit=null, $offset=null) : array {
+	public function readByRating($rating, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		$sql = 'SELECT id, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE rating LIKE :rating';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
+		if ($detailed != 'true') {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE rating LIKE :rating';
+		} else {
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", director.id, "name", director.name, "country", director.country )), "]") '.
+				'FROM director, moviedirector WHERE director.id = moviedirector.director AND moviedirector.movie = movie.id AND movie.id = movieid ORDER BY director.name ASC) AS directors, '.
+				'(SELECT CONCAT("[", GROUP_CONCAT(JSON_OBJECT( "id", category.id, "tag", category.tag )), "]") '.
+				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
+				'FROM movie WHERE movie.rating = :rating';
+		}
+		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -281,10 +369,22 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				if ($detailed == 'true') {
+					$directors = json_decode($directors);
+					$movie->director = array();
+					foreach ($directors as $d) {
+						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+					}
+					$categories = json_decode($categories);
+					$movie->category = array();
+					foreach ($categories as $c) {
+						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+					}
+				}
 				array_push($this->collection, $movie);
 			}
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}

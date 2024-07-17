@@ -1,8 +1,8 @@
 <?php
 /*---------------------------*
- * 
+ *
  * Modele pour une categorie
- * 
+ *
  *---------------------------*/
 
 namespace api\Models;

@@ -1,8 +1,8 @@
 <?php
 /*---------------------*
- * 
+ *
  * Modele pour un film
- * 
+ *
  *---------------------*/
 
 namespace api\Models;

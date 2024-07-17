@@ -1,8 +1,8 @@
 <?php
 /*----------------------------*
- * 
+ *
  * Modele pour les categories
- * 
+ *
  *----------------------------*/
 
 namespace api\Models;
@@ -40,7 +40,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO ' . self::TABLE . ' (tag) VALUES (:tag);');
-			$query->bindParam('tag', $content->tag);
+			$query->bindValue('tag', $content->tag);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -57,8 +57,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO moviecategory (movie, category) VALUES (:movie, :category);');
-			$query->bindParam('movie', $content->movie);
-			$query->bindParam('category', $content->category);
+			$query->bindValue('movie', $content->movie);
+			$query->bindValue('category', $content->category);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -73,8 +73,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 	 */
 	public function readAll($orderby=null, $limit=null, $offset=null) : array {
 
-		$sql = 'SELECT id, tag FROM ' . self::TABLE;
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, tag FROM ' . self::TABLE;
+		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -88,7 +88,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 				$category = new CategoryItemModel($id, $tag);
 				array_push($this->collection, $category);
 			}
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -97,22 +97,19 @@ class CategoryCollectionModel implements CollectionModelInterface {
 	/*
 	 * Lire une categorie par l id
 	 */
-	public function readById($id, $detailed=null) : array {
+	public function readById($id) : array {
 
-		$sql = 'SELECT id, tag FROM ' . self::TABLE . ' WHERE id = :id;';
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, tag FROM ' . self::TABLE . ' WHERE id = :id;';
 		$query = $this->db->prepare($sql);
-		$query->bindParam('id', $id);
+		$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
 			$row = $query->fetch(\PDO::FETCH_ASSOC);
 			extract($row);
 			$category = new CategoryItemModel($id, $tag);
-			if ($detailed == 'true') {
-				$category->movie = $this->readMovie($id);
-			}
 			array_push($this->collection, $category);
-			return $this->collection;
+			return [$this->collection, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -124,12 +121,12 @@ class CategoryCollectionModel implements CollectionModelInterface {
 	public function readMovie($id, $orderby=null, $limit=null, $offset=null) : array {
 
 		$result = array();
-		$sql = 'SELECT movie.id, movie.title, movie.year, movie.rating, movie.poster, movie.allocine FROM movie, moviecategory WHERE moviecategory.movie = movie.id AND moviecategory.category = :id';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby : $sql);
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id, movie.title, movie.year, movie.rating, movie.poster, movie.allocine FROM movie, moviecategory WHERE moviecategory.movie = movie.id AND moviecategory.category = :id';
+		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
-		$query->bindParam('id', $id);
+		$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
 		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
 		$query->execute();
@@ -140,7 +137,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 				$mov = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
 				array_push($result, $mov);
 			}
-			return $result;
+			return [$result, Database::getRowsCount()];
 		} else {
 			return array();
 		}
@@ -153,8 +150,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('UPDATE ' . self::TABLE . ' SET tag = :tag WHERE id=:id;');
-			$query->bindParam('id', $content->id);
-			$query->bindParam('tag', $content->tag);
+			$query->bindValue('id', $content->id);
+			$query->bindValue('tag', $content->tag);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -171,7 +168,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM ' . self::TABLE . ' WHERE id=:id;');
-			$query->bindParam('id', $id);
+			$query->bindValue('id', $id);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -188,8 +185,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM moviecategory WHERE movie=:movie AND category=:category;');
-			$query->bindParam('movie', $movie);
-			$query->bindParam('category', $category);
+			$query->bindValue('movie', $movie);
+			$query->bindValue('category', $category);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {

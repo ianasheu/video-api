@@ -1,8 +1,8 @@
 <?php
 /*--------------------------------*
- * 
+ *
  * Controleur pour les categories
- * 
+ *
  *--------------------------------*/
 
 namespace api\Controllers;
@@ -16,6 +16,7 @@ class CategoryController implements ControllerInterface {
 	private CollectionModelInterface $model;
 	private $response_code;
 	private $response_content;
+	private $response_count;
 
 	/*
 	 * Constructeur
@@ -38,42 +39,47 @@ class CategoryController implements ControllerInterface {
 
 		$this->response_code = 200;
 		$this->response_content = null;
+		$this->response_count = 0;
 
 		$orderby = null;
 		$limit = null;
 		$offset = null;
-		$detailed = null;
+		$filterAvailable = array("orderby", "limit", "offset");
 		foreach ($filter as $f) {
 			if (str_contains($f, '=')) {
-				list($k, $v) = explode('=', $f);
-				if ($v != '') {
-					switch ($k){
-						case 'orderby':
-							$orderby = $v;
-							break;
-						case 'limit':
-							$limit = $v;
-							break;
-						case 'offset':
-							$offset = $v;
-							break;
-						case 'detailed':
-							$detailed = $v;
-							break;
-						default:
-							$response_code = 400;
-							$this->response_content = 'wrong filter';
-							return [$this->response_code, $this->response_content];
+				list($key, $value) = explode('=', $f);
+				if ($value != '') {
+					if (in_array($key, $filterAvailable)) {
+						unset($filterAvailable[array_search($key, $filterAvailable)]);
+						switch ($key){
+							case 'orderby':
+								$orderby = $value;
+								break;
+							case 'limit':
+								$limit = $value;
+								break;
+							case 'offset':
+								$offset = $value;
+								break;
+							default:
+								$response_code = 400;
+								$this->response_content = 'wrong filter';
+								return [$this->response_code, $this->response_content, $this->response_count];
+						}
+					} else {
+						$this->response_code = 400;
+						$this->response_content = 'wrong filter';
+						return [$this->response_code, $this->response_content, $this->response_count];
 					}
 				} else {
 					$this->response_code = 400;
 					$this->response_content = 'wrong filter';
-					return [$this->response_code, $this->response_content];
+					return [$this->response_code, $this->response_content, $this->response_count];
 				}
 			} else {
 				$this->response_code = 400;
 				$this->response_content = 'wrong filter';
-				return [$this->response_code, $this->response_content];
+				return [$this->response_code, $this->response_content, $this->response_count];
 			}
 		}
 
@@ -119,7 +125,7 @@ class CategoryController implements ControllerInterface {
 						if (isset($url[3]) && $url[3]=='movie' && !isset($url[4])) {
 							if ((!$orderby || $orderby && \api\Models\MovieCollectionModel::existsProperty($orderby)) &&
 								(!$limit || $limit && is_numeric($limit)) &&
-								(!$offset || $limit && $offset && is_numeric($offset)) && !$detailed) {
+								(!$offset || $limit && $offset && is_numeric($offset))) {
 								if (!(array)$content) {
 									$this->getMovie($url[2], $orderby, $limit, $offset);
 								} else {
@@ -132,10 +138,9 @@ class CategoryController implements ControllerInterface {
 							}
 						} else
 						if (!isset($url[3])) {
-							if ((!$detailed || $detailed=='false' || $detailed=='true')
-								&& !$orderby && !$limit && !$offset) {
+							if (!$orderby && !$limit && !$offset) {
 								if (!(array)$content) {
-									$this->getById($url[2], $detailed);
+									$this->getById($url[2]);
 								} else {
 									$this->response_code = 400;
 									$this->response_content = 'wrong content';
@@ -152,7 +157,7 @@ class CategoryController implements ControllerInterface {
 					if (!isset($url[1])) {
 						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
 							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) && !$detailed) {
+							(!$offset || $limit && $offset && is_numeric($offset))) {
 							if (!(array)$content) {
 								$this->getAll($orderby, $limit, $offset);
 							} else {
@@ -193,7 +198,7 @@ class CategoryController implements ControllerInterface {
 				case 'DELETE':
 					if ($connected) {
 						if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
-							isset($url[3]) && $url[3]=='movie' && 
+							isset($url[3]) && $url[3]=='movie' &&
 							isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
 							if (!$filter) {
 								if (!(array)$content) {
@@ -235,7 +240,7 @@ class CategoryController implements ControllerInterface {
 			$this->response_code = 400;
 			$this->response_content = 'wrong url';
 		}
-		return [$this->response_code, $this->response_content];
+		return [$this->response_code, $this->response_content, $this->response_count];
 	}
 
 	/*
@@ -270,11 +275,12 @@ class CategoryController implements ControllerInterface {
 	 * Obtenir tous les categories
 	 */
 	private function getAll($orderby=null, $limit=null, $offset=null) {
-		$response_content = $this->model->readAll($orderby, $limit, $offset);
+		list($response_content, $response_count) = $this->model->readAll($orderby, $limit, $offset);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());
@@ -284,12 +290,13 @@ class CategoryController implements ControllerInterface {
 	/*
 	 * Obtenir une categorie par l id
 	 */
-	private function getById($id, $detailed=null) {
-		$response_content = $this->model->readById($id, $detailed);
+	private function getById($id) {
+		list($response_content, $response_count) = $this->model->readById($id);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());
@@ -300,11 +307,12 @@ class CategoryController implements ControllerInterface {
 	 * Obtenir les films d une categorie
 	 */
 	private function getMovie($id, $orderby=null, $limit=null, $offset=null) {
-		$response_content = $this->model->readMovie($id, $orderby, $limit, $offset);
+		list($response_content, $response_count) = $this->model->readMovie($id, $orderby, $limit, $offset);
 
 		if (is_array($response_content) && !empty($response_content)) {
 			$this->response_code = 200;
 			$this->response_content = json_encode($response_content);
+			$this->response_count = $response_count;
 		} else {
 			$this->response_code = 404;
 			$this->response_content = json_encode(array());

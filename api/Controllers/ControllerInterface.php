@@ -1,8 +1,8 @@
 <?php
 /*---------------------------------------------*
- * 
+ *
  * Interface a implementer par les controleurs
- * 
+ *
  *---------------------------------------------*/
 
 namespace api\Controllers;

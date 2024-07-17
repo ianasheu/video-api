@@ -164,7 +164,7 @@ Les valeurs pour year et rating doivent être numériques.
 	method GET
 	request
 		/video/api/movie
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 ```
@@ -178,7 +178,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/id/1127?detailed=true](https://www.ianasheu.com/video/api/movie/id/1127?detailed=true)
+> exemple : [/video/api/movie/id/184?detailed=true](https://www.ianasheu.com/video/api/movie/id/184?detailed=true)
 
 ```
 	method GET
@@ -187,7 +187,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/id/1127/director](https://www.ianasheu.com/video/api/movie/id/1127/director)
+> exemple : [/video/api/movie/id/184/director](https://www.ianasheu.com/video/api/movie/id/184/director)
 
 ```
 	method GET
@@ -196,23 +196,23 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/id/1127/category](https://www.ianasheu.com/video/api/movie/id/1127/category)
+> exemple : [/video/api/movie/id/184/category](https://www.ianasheu.com/video/api/movie/id/184/category)
 
 ```
 	method GET
 	request
 		/video/api/movie/title/{*title*}
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 ```
-> exemple : [/video/api/movie/title/\*glace\*age\*](https://www.ianasheu.com/video/api/movie/title/*glace*age*)
+> exemple : [/video/api/movie/title/\*vous\*chez\*](https://www.ianasheu.com/video/api/movie/title/*vous*chez*)
 
 ```
 	method GET
 	request
 		/video/api/movie/year/{year}
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 ```
@@ -222,7 +222,7 @@ Les valeurs pour year et rating doivent être numériques.
 	method GET
 	request
 		/video/api/movie/rating/{rating}
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 ```
@@ -321,7 +321,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director/id/46](https://www.ianasheu.com/video/api/director/id/46)
+> exemple : [/video/api/director/id/47?detailed=true](https://www.ianasheu.com/video/api/director/id/47?detailed=true)
 
 ```
 	method GET
@@ -331,7 +331,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/director/id/46/movie](https://www.ianasheu.com/video/api/director/id/46/movie)
+> exemple : [/video/api/director/id/47/movie](https://www.ianasheu.com/video/api/director/id/47/movie)
 
 ```
 	method GET
@@ -429,7 +429,6 @@ Les valeurs pour year et rating doivent être numériques.
 	method GET
 	request
 		/video/api/category/id/{id}
-		filtres possibles : detailed
 	response
 		200 : []
 ```
@@ -443,7 +442,7 @@ Les valeurs pour year et rating doivent être numériques.
 	response
 		200 : []
 ```
-> exemple : [/video/api/category/id/5/movie?orderby=year&limit=20&offset=230](https://www.ianasheu.com/video/api/category/id/5/movie?orderby=year&limit=20&offset=230)
+> exemple : [/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240](https://www.ianasheu.com/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240)
 
 ```
 	method PUT

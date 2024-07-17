@@ -19,10 +19,18 @@ try {
 	$root->addController(new DirectorController(new DirectorCollectionModel()));
 	$root->addController(new CategoryController(new CategoryCollectionModel()));
 
-	list($response_code, $response_content) = $root->perform();
+	$response = $root->perform();
+
+	if (count($response) == 2) {
+		list($response_code, $response_content) = $response;
+	} else if (count($response) == 3) {
+		list($response_code, $response_content, $response_count) = $response;
+	} else {
+		throw new Exception('Unexpected response');
+	}
 
 	require_once ROOT_PATH . '/Views/json_view.php';
-	
+
 } catch (Exception $exception) {
 	echo 'Error: ' . $exception->getMessage();
 }

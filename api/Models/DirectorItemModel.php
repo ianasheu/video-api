@@ -1,8 +1,8 @@
 <?php
 /*----------------------------*
- * 
+ *
  * Modele pour un realisateur
- * 
+ *
  *----------------------------*/
 
 namespace api\Models;

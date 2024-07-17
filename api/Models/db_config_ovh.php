@@ -1,8 +1,8 @@
 <?php
 /*-------------------------------------------------------------*
- * 
+ *
  * Informations necessaire a la connexion a la base de donnees
- * 
+ *
  *-------------------------------------------------------------*/
 
 if (!defined('DB_HOST'))     define('DB_HOST', 'localhost');

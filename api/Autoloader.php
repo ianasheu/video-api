@@ -19,10 +19,9 @@ final class Autoloader {
 		$class = str_replace(__NAMESPACE__ . '\\', '', $class);
 		$class = str_replace('\\', '/', $class);
 		$file = __DIR__ . '/' . $class . '.php';
-		if (file_exists($file)) {
-			require_once $file;
-		} else {
-			throw new \Exception('Class not found');
+		if (!file_exists($file)) {
+			throw new \Exception('Class '.$class.' not found');
 		}
+		require_once $file;
 	}
 }

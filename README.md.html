@@ -34,7 +34,7 @@ div { overflow: auto; }
 <body>
 <h1>VIDEO-API</h1>
 <h2>API REST EN PHP POUR BASE DE DONNEES SUR DES FILMS</h2>
-<p>Pour l'exercice, je veux reprendre un ancien dev sur l'ajax en JS : <a href="http://ianasheu.free.fr/video">http://ianasheu.free.fr/video</a>. La page d'origine permet des recherches sur des films. La future page sera faite avec React. Le premier travail procède en un découplage d'avec la base de données. Pour cela, plutôt que d'utiliser un framework, j'ai envie de développer l'api rest moi-même en php afin de couvrir les problématiques.</p>
+<p>Pour l'exercice, je veux reprendre un ancien dev sur l'ajax en JS : <a href="http://ianasheu.free.fr/video" target="_blank">http://ianasheu.free.fr/video</a>. La page d'origine permet des recherches sur des films. La future page sera faite avec React. Le premier travail procède en un découplage d'avec la base de données. Pour cela, plutôt que d'utiliser un framework, j'ai envie de développer l'api rest moi-même en php afin de couvrir les problématiques.</p>
 <br>
 <h2>SCHEMA RELATIONNEL DE LA BASE DE DONNEES</h2>
 <div><img src="https://www.ianasheu.com/video/video-api-bdd-schema.png" title="video-api-bdd-schema.png" alt="video-api-bdd-schema.png"></div>
@@ -119,13 +119,13 @@ div { overflow: auto; }
 <p>Commentaires : Le type des propriétés de classe n'est pas renseigné s'il est scalaire (booléen, entier, nombre décimal, chaîne de caractères). En revanche, il est renseigné si c'est un tableau ou un objet. Il en sera de même pour les types des arguments des méthodes de classe ainsi que les types de valeur de retour. De plus, le type de retour d'une méthode qui ne retourne rien sera indique avec void (sauf pour les constructeurs). Ce n'est donc pas du mode strict.</p>
 <p>Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive les fichiers Controllers/users_config.php et Models/db_config_ovh.php. De plus, sont aussi abscents du diagramme les fichiers .htaccess, index.php, Autoloader.php, Models/MovieItemModel.php, Models/DirectorItemModel.php, Models/CategoryItemModel.php et Views/json_view.php.</p>
 <blockquote>
-<p>sources : <a href="https://www.ianasheu.com/video/video-api-php.zip">video-api-php.zip</a></p>
+<p>sources : <a href="https://www.ianasheu.com/video/video-api-php.zip" target="_blank">video-api-php.zip</a></p>
 </blockquote>
 <br>
 <h2>DESCRIPTION DES APPELS</h2>
 <h4>DOMAINE</h4>
 <blockquote>
-<p><a href="https://www.ianasheu.com">https://www.ianasheu.com</a></p>
+<p><a href="https://www.ianasheu.com" target="_blank">https://www.ianasheu.com</a></p>
 </blockquote>
 <h4>RACINE DE L API</h4>
 <blockquote>
@@ -205,13 +205,13 @@ div { overflow: auto; }
 	method <strong>GET</strong>
 	request
 		/video/api/movie
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8">/video/api/movie?orderby=year&limit=37&offset=8</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8" target="_blank">/video/api/movie?orderby=year&limit=37&offset=8</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -224,7 +224,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/1127?detailed=true">/video/api/movie/id/1127?detailed=true</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184?detailed=true" target="_blank">/video/api/movie/id/184?detailed=true</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -236,7 +236,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/1127/director">/video/api/movie/id/1127/director</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184/director" target="_blank">/video/api/movie/id/184/director</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -248,46 +248,46 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/1127/category">/video/api/movie/id/1127/category</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184/category" target="_blank">/video/api/movie/id/184/category</a></p>
 </blockquote>
 <br>
 <pre><code>
 	method <strong>GET</strong>
 	request
 		/video/api/movie/title/{*title*}
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/title/*glace*age*">/video/api/movie/title/*glace*age*</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/title/*vous*chez*" target="_blank">/video/api/movie/title/*vous*chez*</a></p>
 </blockquote>
 <br>
 <pre><code>
 	method <strong>GET</strong>
 	request
 		/video/api/movie/year/{year}
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/year/2020">/video/api/movie/year/2020</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/year/2020" target="_blank">/video/api/movie/year/2020</a></p>
 </blockquote>
 <br>
 <pre><code>
 	method <strong>GET</strong>
 	request
 		/video/api/movie/rating/{rating}
-		filtres possibles : orderby, limit, offset
+		filtres possibles : orderby, limit, offset, detailed
 	response
 		200 : []
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90">/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90" target="_blank">/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -380,7 +380,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0">/video/api/director?orderby=name&limit=12&offset=0</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0" target="_blank">/video/api/director?orderby=name&limit=12&offset=0</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -393,7 +393,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/46">/video/api/director/id/46</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/47?detailed=true" target="_blank">/video/api/director/id/47?detailed=true</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -406,7 +406,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/46/movie">/video/api/director/id/46/movie</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/47/movie" target="_blank">/video/api/director/id/47/movie</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -419,7 +419,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/name/*sp*">/video/api/director/name/*sp*</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/name/*sp*" target="_blank">/video/api/director/name/*sp*</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -432,7 +432,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/country/US">/video/api/director/country/US</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/country/US" target="_blank">/video/api/director/country/US</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -511,20 +511,19 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0">/video/api/category?orderby=tag&limit=6&offset=0</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0" target="_blank">/video/api/category?orderby=tag&limit=6&offset=0</a></p>
 </blockquote>
 <br>
 <pre><code>
 	method <strong>GET</strong>
 	request
 		/video/api/category/id/{id}
-		filtres possibles : detailed
 	response
 		200 : []
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5">/video/api/category/id/5</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5" target="_blank">/video/api/category/id/5</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -537,7 +536,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5/movie?orderby=year&limit=20&offset=230">/video/api/category/id/5/movie?orderby=year&limit=20&offset=230</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240" target="_blank">/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240</a></p>
 </blockquote>
 <br>
 <pre><code>
