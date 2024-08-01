@@ -59,8 +59,8 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO moviedirector (movie, director) VALUES (:movie, :director);');
-			$query->bindValue('movie', $content->movie);
-			$query->bindValue('director', $content->director);
+			$query->bindValue('movie', intval($content->movie), \PDO::PARAM_INT);
+			$query->bindValue('director', intval($content->director), \PDO::PARAM_INT);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -209,7 +209,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('UPDATE ' . self::TABLE . ' SET name = :name, country = :country WHERE id=:id;');
-			$query->bindValue('id', $content->id);
+			$query->bindValue('id', intval($content->id), \PDO::PARAM_INT);
 			$query->bindValue('name', $content->name);
 			if (!isset($content->country)) {
 				$content->country = null;
@@ -231,7 +231,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM ' . self::TABLE . ' WHERE id=:id;');
-			$query->bindValue('id', $id);
+			$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -248,8 +248,8 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM moviedirector WHERE movie=:movie AND director=:director;');
-			$query->bindValue('movie', $movie);
-			$query->bindValue('director', $director);
+			$query->bindValue('movie', intval($movie), \PDO::PARAM_INT);
+			$query->bindValue('director', intval($director), \PDO::PARAM_INT);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {

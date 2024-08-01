@@ -39,13 +39,13 @@ class MovieController implements ControllerInterface {
 
 		$this->response_code = 200;
 		$this->response_content = null;
-		$this->response_count = 0;
+		$this->response_count = null;
 
 		$orderby = null;
 		$limit = null;
 		$offset = null;
 		$detailed = null;
-		$filterAvailable = array("orderby", "limit", "offset", "detailed");
+		$filterAvailable = array('orderby', 'limit', 'offset', 'detailed');
 		foreach ($filter as $f) {
 			if (str_contains($f, '=')) {
 				list($key, $value) = explode('=', $f);

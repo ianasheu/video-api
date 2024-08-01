@@ -57,8 +57,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO moviecategory (movie, category) VALUES (:movie, :category);');
-			$query->bindValue('movie', $content->movie);
-			$query->bindValue('category', $content->category);
+			$query->bindValue('movie', intval($content->movie), \PDO::PARAM_INT);
+			$query->bindValue('category', intval($content->category), \PDO::PARAM_INT);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -150,7 +150,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('UPDATE ' . self::TABLE . ' SET tag = :tag WHERE id=:id;');
-			$query->bindValue('id', $content->id);
+			$query->bindValue('id', intval($content->id), \PDO::PARAM_INT);
 			$query->bindValue('tag', $content->tag);
 			$query->execute();
 
@@ -168,7 +168,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM ' . self::TABLE . ' WHERE id=:id;');
-			$query->bindValue('id', $id);
+			$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
@@ -185,8 +185,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM moviecategory WHERE movie=:movie AND category=:category;');
-			$query->bindValue('movie', $movie);
-			$query->bindValue('category', $category);
+			$query->bindValue('movie', intval($movie), \PDO::PARAM_INT);
+			$query->bindValue('category', intval($category), \PDO::PARAM_INT);
 			$query->execute();
 
 		} catch (PDOExecption $exception) {
