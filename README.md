@@ -7,7 +7,7 @@ Pour l'exercice, je veux reprendre un ancien dev sur l'ajax en JS : http://ianas
 
 ## SCHEMA RELATIONNEL DE LA BASE DE DONNEES
 
-![](https://www.ianasheu.com/video/video-api-bdd-schema.png "")
+![](./video-api-bdd-schema.png "")
 > _video-api-bdd-schema.png_
 
 
@@ -77,7 +77,7 @@ Afin de limiter les messages d'erreur, la base de données est configurée pour 
 
 ## DIAGRAMME DE CLASSES UML DU CODE PHP DE L'API
 
-![](https://www.ianasheu.com/video/video-api-uml.drawio.svg "")
+![](./video-api-uml.drawio.svg "")
 > _video-api-uml.drawio.svg_
 
 Commentaires : Le type des propriétés de classe n'est pas renseigné s'il est scalaire (booléen, entier, nombre décimal, chaîne de caractères). En revanche, il est renseigné si c'est un tableau ou un objet. Il en sera de même pour les types des arguments des méthodes de classe ainsi que les types de valeur de retour. De plus, le type de retour d'une méthode qui ne retourne rien sera indique avec void (sauf pour les constructeurs). Ce n'est donc pas du mode strict.
