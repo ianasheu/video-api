@@ -23,7 +23,8 @@ try {
 
 	if (count($response) == 2) {
 		list($response_code, $response_content) = $response;
-	} else if (count($response) == 3) {
+	} else
+	if (count($response) == 3) {
 		list($response_code, $response_content, $response_count) = $response;
 	} else {
 		throw new Exception('Unexpected response');

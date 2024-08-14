@@ -101,7 +101,7 @@ Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive le
 > - director
 > - category
 
-Un content au format json est nécessaire pour les methods POST et PUT. Une authentification basique est demandée pour les methods autres que GET. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.
+Une clé API est toujours nécessaire. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.
 
 #### FILTRES
 > - orderby

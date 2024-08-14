@@ -2,7 +2,7 @@
 	Require ip 127.0.0.1
 </Files>
 <Files "index.php">
-    Require all granted
+	Require all granted
 </Files>
 
 RewriteEngine On

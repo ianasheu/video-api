@@ -249,7 +249,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 		$words = explode('%', $words);
 		if (count($words) == 1) {
 			$sql .= ' WHERE movie.title LIKE :title';
-		} else if (count($words) > 1) {
+		} else
+		if (count($words) > 1) {
 			$sql .= ' WHERE movie.title LIKE :words0';
 			for ($i=1; $i<count($words); $i++) {
 				$sql .= ' OR movie.title LIKE :words' . $i;
@@ -261,7 +262,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 		$query = $this->db->prepare($sql . ';');
 		if (count($words) == 1) {
 			$query->bindValue('title', $title);
-		} else if (count($words) > 1) {
+		} else
+		if (count($words) > 1) {
 			for ($i=0; $i<count($words); $i++) {
 				$query->bindValue('words'.$i, '%'.$words[$i].'%');
 			}

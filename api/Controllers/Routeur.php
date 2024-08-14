@@ -18,7 +18,8 @@ class Routeur {
 	private array $url;
 	private array $filter;
 	private object $content;
-	private $connected;
+	private $registered;
+	private $authenticated;
 	private array $controller;
 
 	/*
@@ -54,12 +55,21 @@ class Routeur {
 			$this->content = new \stdClass();
 		}
 		
-		if (isset($_SERVER['PHP_AUTH_USER'])) {
-			$this->connected = (!array_key_exists($_SERVER['PHP_AUTH_USER'], USERS) ? false :
-				(USERS[$_SERVER['PHP_AUTH_USER']]!=$_SERVER['PHP_AUTH_PW'] ? false : true)
-			);
+		if (isset($_SERVER['HTTP_X_API_KEY'])) {
+			$this->registered = false;
+			$this->authenticated = false;
+			foreach (USERS as $user) {
+				if ($user['api_key'] == $_SERVER['HTTP_X_API_KEY']) {
+					$this->registered = true;
+					if (isset($_SERVER['PHP_AUTH_USER']) && $user['login'] == $_SERVER['PHP_AUTH_USER'] && isset($_SERVER['PHP_AUTH_PW']) && $user['password'] == $_SERVER['PHP_AUTH_PW'] && $user['access'] == WRITE_ACCESS) {
+						$this->authenticated = true;
+					}
+					break;
+				}
+			}
 		} else {
-			$this->connected = false;
+			$this->registered = false;
+			$this->authenticated = false;
 		}
 		
 		$this->controller = array();
@@ -87,14 +97,19 @@ class Routeur {
 				}
 			}
 			if ($controller) {
-				$response = $controller->perform($this->method, $this->url, $this->filter, $this->content, $this->connected);
-				return $response;
+				if ($this->registered) {
+					$response = $controller->perform($this->method, $this->url, $this->filter, $this->content, ($this->method=='GET' ? $this->registered : $this->authenticated));
+					return $response;
+				} else {
+					$response_code = 403;
+				}
 			} else {
 				$response_code = 404;
 				$response_content = 'ressource not found';
 			}
 		} else {
-			$response_code = 403;
+			$response_code = 400;
+			$this->response_content = 'wrong url';
 		}
 		return [$response_code, $response_content];
 	}

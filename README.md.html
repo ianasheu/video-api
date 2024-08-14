@@ -30,6 +30,43 @@ div { overflow: auto; }
 	pre,code { font-size: 18px; }
 }
 </style>
+<script>
+window.onload = function() {
+	const apiKey = 'video-api-public-key';
+	document.querySelectorAll('.apicall').forEach(link => {
+		link.addEventListener('auxclick', (event) => {
+			event.preventDefault();
+		});
+		link.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+		});
+		link.addEventListener('click', function(event) {
+			event.preventDefault();
+
+			const href = this.getAttribute('href');
+			const xhr = new XMLHttpRequest();
+			xhr.addEventListener('load', () => {
+
+				const dataStr = JSON.stringify(xhr.response);
+				const newWindow = window.open('', '_blank');
+				newWindow.document.open();
+				newWindow.document.write(dataStr);
+				newWindow.document.close();
+				newWindow.document.title = href;
+				newWindow.history.replaceState('', '', href);
+			});
+			xhr.addEventListener("abort", () => console.log("Annulation Ajax"));
+			xhr.addEventListener("timeout", () => console.log("Timeout Ajax"));
+			xhr.addEventListener("error", () => console.log("Erreur Ajax"));
+			xhr.timeout = 1500;
+			xhr.responseType = "json";
+			xhr.open('GET', href, true);
+			xhr.setRequestHeader('x-api-key', apiKey);
+			xhr.send();
+		});
+	});
+}; /* end window.onload */
+</script>
 </head>
 <body>
 <h1>VIDEO-API</h1>
@@ -139,7 +176,7 @@ div { overflow: auto; }
 <li>category</li>
 </ul>
 </blockquote>
-<p>Un content au format json est nécessaire pour les methods POST et PUT. Une authentification basique est demandée pour les methods autres que GET. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.</p>
+<p>Une clé API est toujours nécessaire. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.</p>
 <h4>FILTRES</h4>
 <blockquote>
 <ul>
@@ -211,7 +248,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8" target="_blank">/video/api/movie?orderby=year&limit=37&offset=8</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8" target="_blank" class="apicall">/video/api/movie?orderby=year&limit=37&offset=8</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -224,7 +261,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184?detailed=true" target="_blank">/video/api/movie/id/184?detailed=true</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184?detailed=true" target="_blank" class="apicall">/video/api/movie/id/184?detailed=true</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -236,7 +273,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184/director" target="_blank">/video/api/movie/id/184/director</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184/director" target="_blank" class="apicall">/video/api/movie/id/184/director</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -248,7 +285,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184/category" target="_blank">/video/api/movie/id/184/category</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/id/184/category" target="_blank" class="apicall">/video/api/movie/id/184/category</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -261,7 +298,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/title/*vous*chez*" target="_blank">/video/api/movie/title/*vous*chez*</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/title/*vous*chez*" target="_blank" class="apicall">/video/api/movie/title/*vous*chez*</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -274,7 +311,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/year/2020" target="_blank">/video/api/movie/year/2020</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/year/2020" target="_blank" class="apicall">/video/api/movie/year/2020</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -287,7 +324,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90" target="_blank">/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90" target="_blank" class="apicall">/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -380,7 +417,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0" target="_blank">/video/api/director?orderby=name&limit=12&offset=0</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0" target="_blank" class="apicall">/video/api/director?orderby=name&limit=12&offset=0</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -393,7 +430,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/47?detailed=true" target="_blank">/video/api/director/id/47?detailed=true</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/47?detailed=true" target="_blank" class="apicall">/video/api/director/id/47?detailed=true</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -406,7 +443,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/47/movie" target="_blank">/video/api/director/id/47/movie</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/id/47/movie" target="_blank" class="apicall">/video/api/director/id/47/movie</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -419,7 +456,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/name/*sp*" target="_blank">/video/api/director/name/*sp*</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/name/*sp*" target="_blank" class="apicall">/video/api/director/name/*sp*</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -432,7 +469,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/director/country/US" target="_blank">/video/api/director/country/US</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/director/country/US" target="_blank" class="apicall">/video/api/director/country/US</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -511,7 +548,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0" target="_blank">/video/api/category?orderby=tag&limit=6&offset=0</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0" target="_blank" class="apicall">/video/api/category?orderby=tag&limit=6&offset=0</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -523,7 +560,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5" target="_blank">/video/api/category/id/5</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5" target="_blank" class="apicall">/video/api/category/id/5</a></p>
 </blockquote>
 <br>
 <pre><code>
@@ -536,7 +573,7 @@ div { overflow: auto; }
 
 </code></pre>
 <blockquote>
-<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240" target="_blank">/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240</a></p>
+<p>exemple : <a href="https://www.ianasheu.com/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240" target="_blank" class="apicall">/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240</a></p>
 </blockquote>
 <br>
 <pre><code>
