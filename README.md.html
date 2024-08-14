@@ -92,7 +92,7 @@ window.onload = function() {
 		`allocine` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
 		CONSTRAINT `movie_pk` PRIMARY KEY (`id`),
 		CONSTRAINT `movie_u` UNIQUE (`id`),
-		INDEX (`title`)
+		FULLTEXT INDEX (`title`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 </code></pre>
@@ -178,7 +178,7 @@ window.onload = function() {
 <li>category</li>
 </ul>
 </blockquote>
-<p>Une clé API est toujours nécessaire. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.</p>
+<p>Une clé API est obligatoire et doit être renseignée dans le header X-Api-Key. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.</p>
 <h4>FILTRES</h4>
 <blockquote>
 <ul>
@@ -624,6 +624,14 @@ window.onload = function() {
 <li>404 Not Found</li>
 <li>405 Method Not Allowed</li>
 <li>503 Service Unavailable</li>
+</ul>
+<br>
+<h2>HEADERS REPONSES POSSIBLES</h2>
+<ul>
+<li>X-Authenticate-Error: API-Key</li>
+<li>WWW-Authenticate: Basic</li>
+<li>X-Error-Message</li>
+<li>X-Total-Count</li>
 </ul>
 </body>
 </html>

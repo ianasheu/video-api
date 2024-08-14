@@ -23,7 +23,7 @@ CREATE TABLE `movie` (
 	`allocine` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
 	CONSTRAINT `movie_pk` PRIMARY KEY (`id`),
 	CONSTRAINT `movie_u` UNIQUE (`id`),
-	INDEX (`title`)
+	FULLTEXT INDEX (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ```
 
@@ -101,7 +101,7 @@ Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive le
 > - director
 > - category
 
-Une clé API est toujours nécessaire. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.
+Une clé API est obligatoire et doit être renseignée dans le header X-Api-Key. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.
 
 #### FILTRES
 > - orderby
@@ -487,3 +487,10 @@ Les valeurs pour year et rating doivent être numériques.
 - 404 Not Found
 - 405 Method Not Allowed
 - 503 Service Unavailable
+
+
+## HEADERS REPONSES POSSIBLES
+- X-Authenticate-Error: API-Key
+- WWW-Authenticate: Basic
+- X-Error-Message
+- X-Total-Count
