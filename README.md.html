@@ -48,12 +48,14 @@ window.onload = function() {
 			xhr.addEventListener('load', () => {
 
 				const dataStr = JSON.stringify(xhr.response);
-				const newWindow = window.open('', '_blank');
-				newWindow.document.open();
-				newWindow.document.write(dataStr);
-				newWindow.document.close();
-				newWindow.document.title = href;
-				newWindow.history.replaceState('', '', href);
+				const newWindow = window.open('./index.html', '_blank');
+				newWindow.addEventListener('load', () => {
+					newWindow.document.open();
+					newWindow.document.write(dataStr);
+					newWindow.document.close();
+					newWindow.document.title = href;
+					newWindow.history.replaceState('', '', href);
+				});
 			});
 			xhr.addEventListener("abort", () => console.log("Annulation Ajax"));
 			xhr.addEventListener("timeout", () => console.log("Timeout Ajax"));
