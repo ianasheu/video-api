@@ -56,6 +56,6 @@ final class Database {
 	public static function getRowsCount() {
 		$row = self::$connection->query('SELECT FOUND_ROWS();');
 		$count = $row->fetchColumn();
-		return (int) $count;
+		return intval($count);
 	}
 }

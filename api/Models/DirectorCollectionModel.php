@@ -92,7 +92,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -116,7 +116,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			array_push($this->collection, $director);
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -144,7 +144,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			}
 			return [$result, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -171,7 +171,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -198,7 +198,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 

@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/ico" href="./favicon.ico">
+<title>README.md</title>
 <meta name="description" content="ianasheu.com">
 <meta name="author" content="contact@ianasheu.com">
-<title>README.md</title>
 <style>
 html, body { font-family: sans-serif; color: #44444; background-color: #F8F8F8; }
 body { width:96%; margin-left:auto; margin-right:auto; }
@@ -101,7 +102,7 @@ window.onload = function() {
 	CREATE TABLE `director` (
 		`id` int NOT NULL auto_increment,
 		`name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-		`country` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+		`country` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
 		CONSTRAINT `director_pk` PRIMARY KEY (`id`),
 		CONSTRAINT `director_u` UNIQUE (`id`),
 		INDEX (`name`)

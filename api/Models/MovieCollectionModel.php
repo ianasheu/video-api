@@ -138,7 +138,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -180,7 +180,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			array_push($this->collection, $movie);
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -203,7 +203,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			}
 			return [$result, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -226,7 +226,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			}
 			return [$result, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -292,7 +292,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -340,7 +340,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -388,7 +388,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 

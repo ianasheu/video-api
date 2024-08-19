@@ -90,7 +90,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 			}
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -111,7 +111,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 			array_push($this->collection, $category);
 			return [$this->collection, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 
@@ -139,7 +139,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 			}
 			return [$result, Database::getRowsCount()];
 		} else {
-			return array();
+			return array(null,0);
 		}
 	}
 

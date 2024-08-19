@@ -31,7 +31,7 @@ CREATE TABLE `movie` (
 CREATE TABLE `director` (
 	`id` int NOT NULL auto_increment,
 	`name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-	`country` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+	`country` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
 	CONSTRAINT `director_pk` PRIMARY KEY (`id`),
 	CONSTRAINT `director_u` UNIQUE (`id`),
 	INDEX (`name`)
