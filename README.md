@@ -129,7 +129,8 @@ Les valeurs pour year et rating doivent être numériques.
 				["allocine" : "idAllocine"]
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -143,7 +144,8 @@ Les valeurs pour year et rating doivent être numériques.
 				"director" : "associateDirector"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -157,7 +159,8 @@ Les valeurs pour year et rating doivent être numériques.
 				"director" : "associateDirector"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -166,7 +169,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie?orderby=year&limit=37&offset=8](https://www.ianasheu.com/video/api/movie?orderby=year&limit=37&offset=8)
 
@@ -176,7 +181,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/id/{id}
 		filtres possibles : detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie/id/184?detailed=true](https://www.ianasheu.com/video/api/movie/id/184?detailed=true)
 
@@ -185,7 +192,9 @@ Les valeurs pour year et rating doivent être numériques.
 	request
 		/video/api/movie/id/{id}/director
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie/id/184/director](https://www.ianasheu.com/video/api/movie/id/184/director)
 
@@ -194,7 +203,9 @@ Les valeurs pour year et rating doivent être numériques.
 	request
 		/video/api/movie/id/{id}/category
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie/id/184/category](https://www.ianasheu.com/video/api/movie/id/184/category)
 
@@ -204,7 +215,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/title/{*title*}
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie/title/\*vous\*chez\*](https://www.ianasheu.com/video/api/movie/title/*vous*chez*)
 
@@ -214,7 +227,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/year/{year}
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie/year/2020](https://www.ianasheu.com/video/api/movie/year/2020)
 
@@ -224,7 +239,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/rating/{rating}
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90](https://www.ianasheu.com/video/api/movie/rating/3.5?orderby=year&limit=10&offset=90)
 
@@ -243,7 +260,8 @@ Les valeurs pour year et rating doivent être numériques.
 				["allocine" : "idAllocine"]
 			}
 	response
-		202 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -252,7 +270,8 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -261,7 +280,8 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/id/{id}/director/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -270,7 +290,8 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/movie/id/{id}/category/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ## DIRECTOR
@@ -286,7 +307,8 @@ Les valeurs pour year et rating doivent être numériques.
 				["country" = "countryCode"]
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -300,7 +322,8 @@ Les valeurs pour year et rating doivent être numériques.
 				"director" : "associateDirector"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -309,7 +332,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/director?orderby=name&limit=12&offset=0](https://www.ianasheu.com/video/api/director?orderby=name&limit=12&offset=0)
 
@@ -319,7 +344,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director/id/{id}
 		filtres possibles : detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/director/id/47?detailed=true](https://www.ianasheu.com/video/api/director/id/47?detailed=true)
 
@@ -329,7 +356,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director/id/{id}/movie
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/director/id/47/movie](https://www.ianasheu.com/video/api/director/id/47/movie)
 
@@ -339,7 +368,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director/name/{*name*}
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/director/name/\*sp\*](https://www.ianasheu.com/video/api/director/name/*sp*)
 
@@ -349,7 +380,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director/country/{country}
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/director/country/US](https://www.ianasheu.com/video/api/director/country/US)
 
@@ -365,7 +398,8 @@ Les valeurs pour year et rating doivent être numériques.
 				["country" : "countryCode"]
 			}
 	response
-		202 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -374,7 +408,8 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -383,7 +418,8 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/director/id/{id}/movie/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 ```
 
 ## CATEGORY
@@ -398,7 +434,8 @@ Les valeurs pour year et rating doivent être numériques.
 				"tag" : "createdCategory"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -412,7 +449,8 @@ Les valeurs pour year et rating doivent être numériques.
 				"category" : "associatedCategory"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 ```
 
 ```
@@ -421,7 +459,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/category
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/category?orderby=tag&limit=6&offset=0](https://www.ianasheu.com/video/api/category?orderby=tag&limit=6&offset=0)
 
@@ -430,7 +470,9 @@ Les valeurs pour year et rating doivent être numériques.
 	request
 		/video/api/category/id/{id}
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/category/id/5](https://www.ianasheu.com/video/api/category/id/5)
 
@@ -440,7 +482,9 @@ Les valeurs pour year et rating doivent être numériques.
 		/video/api/category/id/{id}/movie
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 ```
 > exemple : [/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240](https://www.ianasheu.com/video/api/category/id/5/movie?orderby=rating&limit=20&offset=240)
 
@@ -454,8 +498,9 @@ Les valeurs pour year et rating doivent être numériques.
 				"id" : "id",
 				"tag" : "updatedTag"
 			}
-	response
-		202 : countRow
+	responses
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -463,8 +508,9 @@ Les valeurs pour year et rating doivent être numériques.
 	request
 		/video/api/category/id/{id}
 			Authorization : Basic login:password
-	response
-		200 : countRow
+	responses
+		ok: 204
+		ko: 404
 ```
 
 ```
@@ -472,15 +518,16 @@ Les valeurs pour year et rating doivent être numériques.
 	request
 		/video/api/category/id/{id}/movie/id/{id}
 			Authorization : Basic login:password
-	response
-		200 : countRow
+	responses
+		ok: 204
+		ko: 404
 ```
 
 
 ## CODES HTTP REPONSES POSSIBLES
 - 200 Ok
 - 201 Created
-- 202 Accepted
+- 204 No Content
 - 400 Bad Request
 - 401 Unauthorized
 - 403 Forbidden

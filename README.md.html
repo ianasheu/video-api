@@ -207,7 +207,8 @@ window.onload = function() {
 				["allocine" : "idAllocine"]
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -222,7 +223,8 @@ window.onload = function() {
 				"director" : "associateDirector"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -237,7 +239,8 @@ window.onload = function() {
 				"director" : "associateDirector"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -247,7 +250,9 @@ window.onload = function() {
 		/video/api/movie
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -260,7 +265,9 @@ window.onload = function() {
 		/video/api/movie/id/{id}
 		filtres possibles : detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -272,7 +279,9 @@ window.onload = function() {
 	request
 		/video/api/movie/id/{id}/director
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -284,7 +293,9 @@ window.onload = function() {
 	request
 		/video/api/movie/id/{id}/category
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -297,7 +308,9 @@ window.onload = function() {
 		/video/api/movie/title/{*title*}
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -310,7 +323,9 @@ window.onload = function() {
 		/video/api/movie/year/{year}
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -323,7 +338,9 @@ window.onload = function() {
 		/video/api/movie/rating/{rating}
 		filtres possibles : orderby, limit, offset, detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -345,7 +362,8 @@ window.onload = function() {
 				["allocine" : "idAllocine"]
 			}
 	response
-		202 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -355,7 +373,8 @@ window.onload = function() {
 		/video/api/movie/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -365,7 +384,8 @@ window.onload = function() {
 		/video/api/movie/id/{id}/director/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -375,7 +395,8 @@ window.onload = function() {
 		/video/api/movie/id/{id}/category/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -391,7 +412,8 @@ window.onload = function() {
 				["country" = "countryCode"]
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -406,7 +428,8 @@ window.onload = function() {
 				"director" : "associateDirector"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -416,7 +439,9 @@ window.onload = function() {
 		/video/api/director
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -429,7 +454,9 @@ window.onload = function() {
 		/video/api/director/id/{id}
 		filtres possibles : detailed
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -442,7 +469,9 @@ window.onload = function() {
 		/video/api/director/id/{id}/movie
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -455,7 +484,9 @@ window.onload = function() {
 		/video/api/director/name/{*name*}
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -468,7 +499,9 @@ window.onload = function() {
 		/video/api/director/country/{country}
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -487,7 +520,8 @@ window.onload = function() {
 				["country" : "countryCode"]
 			}
 	response
-		202 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -497,7 +531,8 @@ window.onload = function() {
 		/video/api/director/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -507,7 +542,8 @@ window.onload = function() {
 		/video/api/director/id/{id}/movie/id/{id}
 			Authorization : Basic login:password
 	response
-		200 : countRow
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -522,7 +558,8 @@ window.onload = function() {
 				"tag" : "createdCategory"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -537,7 +574,8 @@ window.onload = function() {
 				"category" : "associatedCategory"
 			}
 	response
-		201 : newId
+		ok: 201 > newId
+		ko: 400 > errorMessage
 
 </code></pre>
 <br>
@@ -547,7 +585,9 @@ window.onload = function() {
 		/video/api/category
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -559,7 +599,9 @@ window.onload = function() {
 	request
 		/video/api/category/id/{id}
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -572,7 +614,9 @@ window.onload = function() {
 		/video/api/category/id/{id}/movie
 		filtres possibles : orderby, limit, offset
 	response
-		200 : []
+		ok: 200 > []
+		ko: 404
+		ko: 400 > errorMessage
 
 </code></pre>
 <blockquote>
@@ -589,8 +633,9 @@ window.onload = function() {
 				"id" : "id",
 				"tag" : "updatedTag"
 			}
-	response
-		202 : countRow
+	responses
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -599,8 +644,9 @@ window.onload = function() {
 	request
 		/video/api/category/id/{id}
 			Authorization : Basic login:password
-	response
-		200 : countRow
+	responses
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -609,8 +655,9 @@ window.onload = function() {
 	request
 		/video/api/category/id/{id}/movie/id/{id}
 			Authorization : Basic login:password
-	response
-		200 : countRow
+	responses
+		ok: 204
+		ko: 404
 
 </code></pre>
 <br>
@@ -618,7 +665,7 @@ window.onload = function() {
 <ul>
 <li>200 Ok</li>
 <li>201 Created</li>
-<li>202 Accepted</li>
+<li>204 No Content</li>
 <li>400 Bad Request</li>
 <li>401 Unauthorized</li>
 <li>403 Forbidden</li>

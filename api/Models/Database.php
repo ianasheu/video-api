@@ -38,10 +38,10 @@ final class Database {
 		if (!isset(self::$connection) || is_null(self::$connection)) {
 			try {
 				self::$connection = new \PDO('mysql:host=' . DB_HOST . '; dbname=' . DB_DATABASE . '; charset=utf8mb4;', DB_USERNAME, DB_PASSWORD);
-				self::$connection->exec('set names utf8mb4');
 				self::$connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 				self::$connection->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 				self::$connection->setAttribute(\PDO::MYSQL_ATTR_FOUND_ROWS, true);
+				self::$connection->exec('set names utf8mb4');
 				if (mysqli_connect_errno()) {
 					throw new \Exception('Erreur de connection a la base de donnees.');
 				}

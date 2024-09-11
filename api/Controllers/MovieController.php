@@ -35,328 +35,227 @@ class MovieController implements ControllerInterface {
 	/*
 	 * Effectuer une requete
 	 */
-	public function perform($method, array $url, array $filter=null, object $content=null, $connected=null) : array {
-
-		$this->response_code = 200;
-		$this->response_content = null;
-		$this->response_count = null;
+	public function callModel($method, array $url, array $filter=null, object $content=null, $connected=null) : array {
 
 		$orderby = null;
 		$limit = null;
 		$offset = null;
 		$detailed = null;
 		$filterAvailable = array('orderby', 'limit', 'offset', 'detailed');
-		foreach ($filter as $f) {
-			if (str_contains($f, '=')) {
-				list($key, $value) = explode('=', $f);
-				if ($value != '') {
-					if (in_array($key, $filterAvailable)) {
-						unset($filterAvailable[array_search($key, $filterAvailable)]);
-						switch ($key){
-							case 'orderby':
-								$orderby = $value;
-								break;
-							case 'limit':
-								$limit = $value;
-								break;
-							case 'offset':
-								$offset = $value;
-								break;
-							case 'detailed':
-								$detailed = $value;
-								break;
-							default:
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-								return [$this->response_code, $this->response_content, $this->response_count];
-						}
-					} else {
-						$this->response_code = 400;
-						$this->response_content = 'wrong filter';
-						return [$this->response_code, $this->response_content, $this->response_count];
-					}
-				} else {
-					$this->response_code = 400;
-					$this->response_content = 'wrong filter';
-					return [$this->response_code, $this->response_content, $this->response_count];
-				}
-			} else {
-				$this->response_code = 400;
-				$this->response_content = 'wrong filter';
-				return [$this->response_code, $this->response_content, $this->response_count];
+		foreach ($filter as $fltr) {
+			if (!str_contains($fltr, '=')) {
+				return [400, 'wrong filter'];
+			}
+			
+			list($key, $value) = explode('=', $fltr);
+			
+			if (!in_array($key, $filterAvailable)) {
+				return [400, 'wrong filter'];
+			}
+			if ($value == '') {
+				return [400, 'wrong filter'];
+			}
+			
+			unset($filterAvailable[array_search($key, $filterAvailable)]);
+			
+			switch ($key){
+				case 'orderby':
+					$orderby = $value;
+					break;
+				case 'limit':
+					$limit = $value;
+					break;
+				case 'offset':
+					$offset = $value;
+					break;
+				case 'detailed':
+					$detailed = $value;
+					break;
 			}
 		}
 
-		if ($url[0] == self::ROUTE) {
-			switch ($method) {
-				case 'POST':
-					if ($connected) {
-						if (isset($url[1]) && $url[1]=='director' && !isset($url[2])) {
-							if (!$filter) {
-								if ((array)$content && isset($content->movie) && isset($content->director)) {
-									$this->postDirector($content);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else
-						if (isset($url[1]) && $url[1]=='category' && !isset($url[2])) {
-							if (!$filter) {
-								if ((array)$content && isset($content->movie) && isset($content->category)) {
-									$this->postCategory($content);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else
-						if (!isset($url[1])) {
-							if (!$filter) {
-								if ((array)$content && isset($content->title) &&
-									(!isset($content->year) || isset($content->year) && is_numeric($content->year)) &&
-									(!isset($content->rating) || isset($content->rating) && is_numeric($content->rating))) {
-									$this->post($content);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else {
-							$this->response_code = 400;
-							$this->response_content = 'wrong url';
-						}
-					} else {
-						$this->response_code = 401;
-					}
-					break;
-				case 'GET':
-					if ($connected) {
-						if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2])) {
-							if (isset($url[3]) && $url[3]=='director' && !isset($url[4])) {
-								if (!$filter) {
-									if (!(array)$content) {
-										$this->getDirector($url[2]);
-									} else {
-										$this->response_code = 400;
-										$this->response_content = 'wrong content';
-									}
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong filter';
-								}
-							} else
-							if (isset($url[3]) && $url[3]=='category' && !isset($url[4])) {
-								if (!$filter) {
-									if (!(array)$content) {
-										$this->getCategory($url[2]);
-									} else {
-										$this->response_code = 400;
-										$this->response_content = 'wrong content';
-									}
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong filter';
-								}
-							} else
-							if (!isset($url[3])) {
-								if ((!$detailed || $detailed=='false' || $detailed=='true')
-									&& !$orderby && !$limit && !$offset) {
-									if (!(array)$content) {
-										$this->getById($url[2], $detailed);
-									} else {
-										$this->response_code = 400;
-										$this->response_content = 'wrong content';
-									}
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong filter';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong url';
-							}
-						} else
-						if (isset($url[1]) && $url[1]=='title') {
-							if (isset($url[2]) && $url[2]!='' && !isset($url[3])) {
-								if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
-									(!$limit || $limit && is_numeric($limit)) &&
-									(!$offset || $limit && $offset && is_numeric($offset)) &&
-									(!$detailed || $detailed=='false' || $detailed=='true')) {
-									if (!(array)$content) {
-										$this->getByTitle($url[2], $orderby, $limit, $offset, $detailed);
-									} else {
-										$this->response_code = 400;
-										$this->response_content = 'wrong content';
-									}
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong filter';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong url';
-							}
-						} else
-						if (isset($url[1]) && $url[1]=='year') {
-							if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
-								if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
-									(!$limit || $limit && is_numeric($limit)) &&
-									(!$offset || $limit && $offset && is_numeric($offset)) &&
-									(!$detailed || $detailed=='false' || $detailed=='true')) {
-									if (!(array)$content) {
-										$this->getByYear($url[2], $orderby, $limit, $offset, $detailed);
-									} else {
-										$this->response_code = 400;
-										$this->response_content = 'wrong content';
-									}
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong filter';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong url';
-							}
-						} else
-						if (isset($url[1]) && $url[1]=='rating') {
-							if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
-								if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
-									(!$limit || $limit && is_numeric($limit)) &&
-									(!$offset || $limit && $offset && is_numeric($offset)) &&
-									(!$detailed || $detailed=='false' || $detailed=='true')) {
-									if (!(array)$content) {
-										$this->getByRating($url[2], $orderby, $limit, $offset, $detailed);
-									} else {
-										$this->response_code = 400;
-										$this->response_content = 'wrong content';
-									}
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong filter';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong url';
-							}
-						} else
-						if (!isset($url[1])) {
-							if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
-								(!$limit || $limit && is_numeric($limit)) &&
-								(!$offset || $limit && $offset && is_numeric($offset)) &&
-								(!$detailed || $detailed=='false' || $detailed=='true')) {
-								if (!(array)$content) {
-									$this->getAll($orderby, $limit, $offset, $detailed);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else {
-							$this->response_code = 400;
-							$this->response_content = 'wrong url';
-						}
-					} else {
-						$this->response_code = 403;
-					}
-					break;
-				case 'PUT':
-					if ($connected) {
-						if (!isset($url[1])) {
-							if (!$filter) {
-								if ((array)$content && isset($content->id) && is_numeric($content->id) && isset($content->title) &&
-									(!isset($content->year) || isset($content->year) && is_numeric($content->year)) &&
-									(!isset($content->rating) || isset($content->rating) && is_numeric($content->rating))) {
-									$this->put($content);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else {
-							$this->response_code = 400;
-							$this->response_content = 'wrong url';
-						}
-					} else {
-						$this->response_code = 401;
-					}
-					break;
-				case 'DELETE':
-					if ($connected) {
-						if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
-							isset($url[3]) && $url[3]=='director' &&
-							isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
-							if (!$filter) {
-								if (!(array)$content) {
-									$this->deleteDirector($url[2], $url[5]);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else
-						if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
-							isset($url[3]) && $url[3]=='category' &&
-							isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
-							if (!$filter) {
-								if (!(array)$content) {
-									$this->deleteCategory($url[2], $url[5]);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else
-						if (isset($url[1]) && $url[1]=='id' &&
-							isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
-							if (!$filter) {
-								if (!(array)$content) {
-									$this->deleteById($url[2]);
-								} else {
-									$this->response_code = 400;
-									$this->response_content = 'wrong content';
-								}
-							} else {
-								$this->response_code = 400;
-								$this->response_content = 'wrong filter';
-							}
-						} else {
-							$this->response_code = 400;
-							$this->response_content = 'wrong url';
-						}
-					} else {
-						$this->response_code = 401;
-					}
-					break;
-				default :
-					$this->response_code = 405;
-			}
-		} else {
-			$this->response_code = 400;
-			$this->response_content = 'wrong url';
+		if ($url[0] != self::ROUTE) {
+			return [400, 'wrong url'];
 		}
-		return [$this->response_code, $this->response_content, $this->response_count];
+
+		if (!in_array($method, array('POST', 'GET', 'PUT', 'DELETE'))) {
+			return [405];
+		}
+
+		if (!$connected) {
+			if($method != 'GET') {
+				return [401];
+			} else {
+				return [403];
+			}
+		}
+
+		switch ($method) {
+			case 'POST':
+				if ($filter) {
+					return [400, 'wrong filter'];
+				}
+				if (isset($url[1]) && $url[1]=='director' && !isset($url[2])) {
+					if ((array)$content && isset($content->movie) && isset($content->director)) {
+						$this->postDirector($content);
+					} else {
+						return [400, 'wrong content'];
+					}
+				} else
+				if (isset($url[1]) && $url[1]=='category' && !isset($url[2])) {
+					if ((array)$content && isset($content->movie) && isset($content->category)) {
+						$this->postCategory($content);
+					} else {
+						return [400, 'wrong content'];
+					}
+				} else
+				if (!isset($url[1])) {
+					if ((array)$content && isset($content->title) &&
+						(!isset($content->year) || isset($content->year) && is_numeric($content->year)) &&
+						(!isset($content->rating) || isset($content->rating) && is_numeric($content->rating))) {
+						$this->post($content);
+					} else {
+						return [400, 'wrong content'];
+					}
+				} else {
+					return [400, 'wrong url'];
+				}
+				break;
+			case 'GET':
+				if ((array)$content) {
+					return [400, 'wrong content'];
+				}
+				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2])) {
+					if (isset($url[3]) && $url[3]=='director' && !isset($url[4])) {
+						if (!$filter) {
+							$this->getDirector($url[2]);
+						} else {
+							return [400, 'wrong filter'];
+						}
+					} else
+					if (isset($url[3]) && $url[3]=='category' && !isset($url[4])) {
+						if (!$filter) {
+							$this->getCategory($url[2]);
+						} else {
+							return [400, 'wrong filter'];
+						}
+					} else
+					if (!isset($url[3])) {
+						if ((!$detailed || $detailed=='false' || $detailed=='true')
+							&& !$orderby && !$limit && !$offset) {
+							$this->getById($url[2], $detailed);
+						} else {
+							return [400, 'wrong filter'];
+						}
+					} else {
+						return [400, 'wrong url'];
+					}
+				} else
+				if (isset($url[1]) && $url[1]=='title') {
+					if (isset($url[2]) && $url[2]!='' && !isset($url[3])) {
+						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+							(!$limit || $limit && is_numeric($limit)) &&
+							(!$offset || $limit && $offset && is_numeric($offset)) &&
+							(!$detailed || $detailed=='false' || $detailed=='true')) {
+							$this->getByTitle($url[2], $orderby, $limit, $offset, $detailed);
+						} else {
+							return [400, 'wrong filter'];
+						}
+					} else {
+						$this->response_code = 400;
+						$this->response_content = 'wrong url';
+					}
+				} else
+				if (isset($url[1]) && $url[1]=='year') {
+					if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
+						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+							(!$limit || $limit && is_numeric($limit)) &&
+							(!$offset || $limit && $offset && is_numeric($offset)) &&
+							(!$detailed || $detailed=='false' || $detailed=='true')) {
+							$this->getByYear($url[2], $orderby, $limit, $offset, $detailed);
+						} else {
+							return [400, 'wrong filter'];
+						}
+					} else {
+						return [400, 'wrong url'];
+					}
+				} else
+				if (isset($url[1]) && $url[1]=='rating') {
+					if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
+						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+							(!$limit || $limit && is_numeric($limit)) &&
+							(!$offset || $limit && $offset && is_numeric($offset)) &&
+							(!$detailed || $detailed=='false' || $detailed=='true')) {
+							$this->getByRating($url[2], $orderby, $limit, $offset, $detailed);
+						} else {
+							return [400, 'wrong filter'];
+						}
+					} else {
+						return [400, 'wrong url'];
+					}
+				} else
+				if (!isset($url[1])) {
+					if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+						(!$limit || $limit && is_numeric($limit)) &&
+						(!$offset || $limit && $offset && is_numeric($offset)) &&
+						(!$detailed || $detailed=='false' || $detailed=='true')) {
+						$this->getAll($orderby, $limit, $offset, $detailed);
+					} else {
+						return [400, 'wrong filter'];
+					}
+				} else {
+					return [400, 'wrong url'];
+				}
+				break;
+			case 'PUT':
+				if ($filter) {
+					return [400, 'wrong filter'];
+				}
+				if (!isset($url[1])) {
+					if ((array)$content && isset($content->id) && is_numeric($content->id) && isset($content->title) &&
+						(!isset($content->year) || isset($content->year) && is_numeric($content->year)) &&
+						(!isset($content->rating) || isset($content->rating) && is_numeric($content->rating))) {
+						$this->put($content);
+					} else {
+						return [400, 'wrong content'];
+					}
+				} else {
+					return [400, 'wrong url'];
+				}
+				break;
+			case 'DELETE':
+				if ($filter) {
+					return [400, 'wrong filter'];
+				}
+				if ((array)$content) {
+					return [400, 'wrong content'];
+				}
+				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
+					isset($url[3]) && $url[3]=='director' &&
+					isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
+					$this->deleteDirector($url[2], $url[5]);
+				} else
+				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
+					isset($url[3]) && $url[3]=='category' &&
+					isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
+					$this->deleteCategory($url[2], $url[5]);
+				} else
+				if (isset($url[1]) && $url[1]=='id' &&
+					isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
+					$this->deleteById($url[2]);
+				} else {
+					return [400, 'wrong url'];
+				}
+				break;
+		}
+
+		if (isset($this->response_count)) {
+			return [$this->response_code, $this->response_content, $this->response_count];
+		} else
+		if (isset($this->response_content)) {
+			return [$this->response_code, $this->response_content];
+		}
+		return [$this->response_code];
 	}
 
 	/*
@@ -365,12 +264,13 @@ class MovieController implements ControllerInterface {
 	private function post(object $content) {
 		$response_content = $this->model->create($content);
 
-		if ($response_content !== false) {
-			$this->response_code = 201;
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		$this->response_code = 201;
+		$this->response_content = json_encode($response_content);
 	}
 
 	/*
@@ -379,12 +279,19 @@ class MovieController implements ControllerInterface {
 	private function postDirector(object $content) {
 		$response_content = $this->model->createDirector($content);
 
-		if ($response_content !== false) {
-			$this->response_code = 201;
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		if ($response_content == 0) {
+			$this->response_code = 400;
+			$this->response_content = 'invalid parameter value';
+			return;
+		}
+
+		$this->response_code = 201;
+		$this->response_content = json_encode($response_content);
 	}
 
 	/*
@@ -393,12 +300,19 @@ class MovieController implements ControllerInterface {
 	private function postCategory(object $content) {
 		$response_content = $this->model->createCategory($content);
 
-		if ($response_content !== false) {
-			$this->response_code = 201;
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		if ($response_content == 0) {
+			$this->response_code = 400;
+			$this->response_content = 'invalid parameter value';
+			return;
+		}
+
+		$this->response_code = 201;
+		$this->response_content = json_encode($response_content);
 	}
 
 	/*
@@ -407,14 +321,14 @@ class MovieController implements ControllerInterface {
 	private function getAll($orderby=null, $limit=null, $offset=null, $detailed=null) {
 		list($response_content, $response_count) = $this->model->readAll($orderby, $limit, $offset, $detailed);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -423,14 +337,14 @@ class MovieController implements ControllerInterface {
 	private function getById($id, $detailed=null) {
 		list($response_content, $response_count) = $this->model->readById($id, $detailed);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -439,14 +353,14 @@ class MovieController implements ControllerInterface {
 	private function getDirector($id) {
 		list($response_content, $response_count) = $this->model->readDirector($id);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -455,14 +369,14 @@ class MovieController implements ControllerInterface {
 	private function getCategory($id) {
 		list($response_content, $response_count) = $this->model->readCategory($id);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -472,14 +386,14 @@ class MovieController implements ControllerInterface {
 		$title = str_replace('*', '%', $title);
 		list($response_content, $response_count) = $this->model->readByTitle($title, $orderby, $limit, $offset, $detailed);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -488,14 +402,14 @@ class MovieController implements ControllerInterface {
 	private function getByYear($year, $orderby=null, $limit=null, $offset=null, $detailed=null) {
 		list($response_content, $response_count) = $this->model->readByYear($year, $orderby, $limit, $offset, $detailed);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -504,14 +418,14 @@ class MovieController implements ControllerInterface {
 	private function getByRating($rating, $orderby=null, $limit=null, $offset=null, $detailed=null) {
 		list($response_content, $response_count) = $this->model->readByRating($rating, $orderby, $limit, $offset, $detailed);
 
-		if (is_array($response_content) && !empty($response_content)) {
-			$this->response_code = 200;
-			$this->response_content = json_encode($response_content);
-			$this->response_count = $response_count;
-		} else {
+		if (!is_array($response_content) || empty($response_content)) {
 			$this->response_code = 404;
-			$this->response_content = json_encode(array());
+			return;
 		}
+
+		$this->response_code = 200;
+		$this->response_content = json_encode($response_content);
+		$this->response_count = $response_count;
 	}
 
 	/*
@@ -520,12 +434,17 @@ class MovieController implements ControllerInterface {
 	private function put(object $content) {
 		$response_content = $this->model->update($content);
 
-		if ($response_content !== false) {
-			$this->response_code = 202;
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		if ($response_content == 0) {
+			$this->response_code = 404;
+			return;
+		}
+
+		$this->response_code = 204;
 	}
 
 	/*
@@ -534,16 +453,17 @@ class MovieController implements ControllerInterface {
 	private function deleteById($id) {
 		$response_content = $this->model->deleteById($id);
 
-		if ($response_content !== false) {
-			if ($response_content != 0) {
-				$this->response_code = 200;
-			} else {
-				$this->response_code = 404;
-			}
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		if ($response_content == 0) {
+			$this->response_code = 404;
+			return;
+		}
+
+		$this->response_code = 204;
 	}
 
 	/*
@@ -552,16 +472,17 @@ class MovieController implements ControllerInterface {
 	private function deleteDirector($movie, $director) {
 		$response_content = $this->model->deleteDirector($movie, $director);
 
-		if ($response_content !== false) {
-			if ($response_content != 0) {
-				$this->response_code = 200;
-			} else {
-				$this->response_code = 404;
-			}
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		if ($response_content == 0) {
+			$this->response_code = 404;
+			return;
+		}
+
+		$this->response_code = 204;
 	}
 
 	/*
@@ -570,15 +491,16 @@ class MovieController implements ControllerInterface {
 	private function deleteCategory($movie, $category) {
 		$response_content = $this->model->deleteCategory($movie, $category);
 
-		if ($response_content !== false) {
-			if ($response_content != 0) {
-				$this->response_code = 200;
-			} else {
-				$this->response_code = 404;
-			}
-			$this->response_content = json_encode($response_content);
-		} else {
+		if ($response_content === false) {
 			$this->response_code = 503;
+			return;
 		}
+
+		if ($response_content == 0) {
+			$this->response_code = 404;
+			return;
+		}
+
+		$this->response_code = 204;
 	}
 }

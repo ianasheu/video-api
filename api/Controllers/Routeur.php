@@ -42,8 +42,8 @@ class Routeur {
 		}
 		
 		$filter = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-		$filter = trim($filter, '&');
 		if ($filter) {
+			$filter = trim($filter, '&');
 			$this->filter = explode('&', $filter);
 		} else {
 			$this->filter = array();
@@ -61,7 +61,9 @@ class Routeur {
 			foreach (USERS as $user) {
 				if ($user['api_key'] == $_SERVER['HTTP_X_API_KEY']) {
 					$this->registered = true;
-					if (isset($_SERVER['PHP_AUTH_USER']) && $user['login'] == $_SERVER['PHP_AUTH_USER'] && isset($_SERVER['PHP_AUTH_PW']) && $user['password'] == $_SERVER['PHP_AUTH_PW'] && $user['access'] == WRITE_ACCESS) {
+					if (isset($_SERVER['PHP_AUTH_USER']) && $user['login'] == $_SERVER['PHP_AUTH_USER'] &&
+						isset($_SERVER['PHP_AUTH_PW']) && $user['password'] == $_SERVER['PHP_AUTH_PW'] &&
+						$user['access'] == WRITE_ACCESS) {
 						$this->authenticated = true;
 					}
 					break;
@@ -85,32 +87,27 @@ class Routeur {
 	/*
 	 * Effectuer une methode
 	 */
-	public function perform() : array {
-		$response_code = 200;
-		$response_content = null;
-		$controller = null;
-		if (is_array($this->url) && !empty($this->url)) {
-			foreach ($this->controller as $ctrl) {
-				if ($ctrl->getRoute() == $this->url[0]) {
-					$controller = $ctrl;
-					break;
-				}
-			}
-			if ($controller) {
-				if ($this->registered) {
-					$response = $controller->perform($this->method, $this->url, $this->filter, $this->content, ($this->method=='GET' ? $this->registered : $this->authenticated));
-					return $response;
-				} else {
-					$response_code = 403;
-				}
-			} else {
-				$response_code = 404;
-				$response_content = 'ressource not found';
-			}
-		} else {
-			$response_code = 400;
-			$this->response_content = 'wrong url';
+	public function callController() : array {
+
+		if (!is_array($this->url) || empty($this->url)) {
+			return [400, 'wrong url'];
 		}
-		return [$response_code, $response_content];
+		
+		foreach ($this->controller as $ctrl) {
+			if ($ctrl->getRoute() == $this->url[0]) {
+				$controller = $ctrl;
+				break;
+			}
+		}
+		
+		if (!isset($controller)) {
+			return [404];
+		}
+		
+		if (!$this->registered) {
+			return [403];
+		}
+		
+		return $controller->callModel($this->method, $this->url, $this->filter, $this->content, ($this->method=='GET' ? $this->registered : $this->authenticated));
 	}
 }

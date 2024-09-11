@@ -44,12 +44,11 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			if (!isset($content->country)) $content->country = null;
 			$query->bindValue('country', $content->country);
 			$query->execute();
+			return intval($this->db->lastInsertId());
 
-		} catch (PDOExecption $exception) {
-			throw new \Exception($exception->getMessage());
+		} catch (\PDOException $exception) {
 			return false;
 		}
-		return intval($this->db->lastInsertId());
 	}
 
 	/*
@@ -62,12 +61,17 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			$query->bindValue('movie', intval($content->movie), \PDO::PARAM_INT);
 			$query->bindValue('director', intval($content->director), \PDO::PARAM_INT);
 			$query->execute();
+			return intval($this->db->lastInsertId());
 
-		} catch (PDOExecption $exception) {
-			throw new \Exception($exception->getMessage());
+		} catch (\PDOException $exception) {
+			if ($query) {
+				$error = $query->errorInfo();
+				if($error && isset($error[1]) && $error[1] == 1452) {
+					return 0;
+				}
+			}
 			return false;
 		}
-		return intval($this->db->lastInsertId());
 	}
 
 	/*
@@ -216,12 +220,11 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			}
 			$query->bindValue('country', $content->country);
 			$query->execute();
+			return intval($query->rowCount());
 
-		} catch (PDOExecption $exception) {
-			throw new \Exception($exception->getMessage());
+		} catch (\PDOException $exception) {
 			return false;
 		}
-		return intval($query->rowCount());
 	}
 
 	/*
@@ -233,12 +236,11 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			$query = $this->db->prepare('DELETE FROM ' . self::TABLE . ' WHERE id=:id;');
 			$query->bindValue('id', intval($id), \PDO::PARAM_INT);
 			$query->execute();
+			return intval($query->rowCount());
 
-		} catch (PDOExecption $exception) {
-			throw new \Exception($exception->getMessage());
+		} catch (\PDOException $exception) {
 			return false;
 		}
-		return intval($query->rowCount());
 	}
 
 	/*
@@ -251,11 +253,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			$query->bindValue('movie', intval($movie), \PDO::PARAM_INT);
 			$query->bindValue('director', intval($director), \PDO::PARAM_INT);
 			$query->execute();
+			return intval($query->rowCount());
 
-		} catch (PDOExecption $exception) {
-			throw new \Exception($exception->getMessage());
+		} catch (\PDOException $exception) {
 			return false;
 		}
-		return intval($query->rowCount());
 	}
 }
