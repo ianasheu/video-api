@@ -18,6 +18,6 @@ if ($response_code == 401) {
 if ($response_code == 400) {
 	header('X-Error-Message: '. $response_content);
 } else
-if ($response_content) {
+if (isset($response_content)) {
 	echo $response_content;
 }
