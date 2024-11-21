@@ -7,9 +7,9 @@
 
 namespace api\Models;
 
-use \api\Models\Database,
-	\api\Models\CategoryItemModel,
-	\api\Models\MovieItemModel;
+use api\Models\Database,
+	api\Models\CategoryItemModel,
+	api\Models\MovieItemModel;
 
 class CategoryCollectionModel implements CollectionModelInterface {
 
@@ -78,7 +78,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 	public function readAll($orderby=null, $limit=null, $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, tag FROM ' . self::TABLE;
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -126,7 +126,7 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 		$result = array();
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id, movie.title, movie.year, movie.rating, movie.poster, movie.allocine FROM movie, moviecategory WHERE moviecategory.movie = movie.id AND moviecategory.category = :id';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');

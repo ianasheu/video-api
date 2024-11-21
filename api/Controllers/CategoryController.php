@@ -7,7 +7,7 @@
 
 namespace api\Controllers;
 
-use \api\Models\CollectionModelInterface;
+use api\Models\CollectionModelInterface;
 
 class CategoryController implements ControllerInterface {
 

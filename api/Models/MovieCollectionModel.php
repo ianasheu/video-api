@@ -7,10 +7,10 @@
 
 namespace api\Models;
 
-use \api\Models\Database,
-	\api\Models\MovieItemModel,
-	\api\Models\DirectorItemModel,
-	\api\Models\CategoryItemModel;
+use api\Models\Database,
+	api\Models\MovieItemModel,
+	api\Models\DirectorItemModel,
+	api\Models\CategoryItemModel;
 
 class MovieCollectionModel implements CollectionModelInterface {
 
@@ -119,7 +119,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
 				'FROM movie';
 		}
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -262,10 +262,10 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if (count($words) > 1) {
 			$sql .= ' WHERE movie.title LIKE :words0';
 			for ($i=1; $i<count($words); $i++) {
-				$sql .= ' OR movie.title LIKE :words' . $i;
+				$sql .= " OR movie.title LIKE :words{$i}";
 			}
 		}
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -274,7 +274,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 		} else
 		if (count($words) > 1) {
 			for ($i=0; $i<count($words); $i++) {
-				$query->bindValue('words'.$i, '%'.$words[$i].'%');
+				$query->bindValue("words{$i}", "%{$words[$i]}%");
 			}
 		}
 		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
@@ -320,7 +320,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
 				'FROM movie WHERE movie.year LIKE :year';
 		}
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -368,7 +368,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 				'FROM category, moviecategory WHERE category.id = moviecategory.category AND moviecategory.movie = movie.id AND movie.id = movieid ORDER BY moviecategory.id ASC) AS categories '.
 				'FROM movie WHERE movie.rating = :rating';
 		}
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');

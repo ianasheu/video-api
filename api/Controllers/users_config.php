@@ -1,11 +1,10 @@
 <?php
-/*-------------------------------------------*
+/*--------------------------------------*
  *
- * Liste des identifiants/mots de passe pour
- * les authentifications necessaire a
- * l utilisation des methodes autres que GET
+ * Liste des identifiants/mots de passe
+ * necessaire a l utilisation de l API
  *
- *-------------------------------------------*/
+ *--------------------------------------*/
 
 if (!defined('READ_ACCESS')) {
 	define('READ_ACCESS', 1);

@@ -7,9 +7,9 @@
 
 namespace api\Models;
 
-use \api\Models\Database,
-	\api\Models\DirectorItemModel,
-	\api\Models\MovieItemModel;
+use api\Models\Database,
+	api\Models\DirectorItemModel,
+	api\Models\MovieItemModel;
 
 class DirectorCollectionModel implements CollectionModelInterface {
 
@@ -80,7 +80,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	public function readAll($orderby=null, $limit=null, $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE;
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -131,7 +131,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 		$result = array();
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id, movie.title, movie.year, movie.rating, movie.poster, movie.allocine FROM movie, moviedirector WHERE moviedirector.movie = movie.id AND moviedirector.director = :id';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -158,7 +158,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	public function readByName($name, $orderby=null, $limit=null, $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE . ' WHERE name LIKE :name';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
@@ -185,7 +185,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	public function readByCountry($country, $orderby=null, $limit=null, $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE . ' WHERE country LIKE :country';
-		$sql = ($orderby ? $sql . ' ORDER BY ' . $orderby . ' ASC' : $sql);
+		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');

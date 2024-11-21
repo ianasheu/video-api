@@ -7,7 +7,7 @@
 
 namespace api\Models;
 
-require_once ROOT_PATH . '/Models/db_config_ovh.php';
+require_once ROOT_PATH . '/Models/database_config.php';
 
 final class Database {
 	// Propriétés

@@ -7,7 +7,7 @@
 
 namespace api\Controllers;
 
-use \api\Controllers\ControllerInterface;
+use api\Controllers\ControllerInterface;
 
 require_once ROOT_PATH . '/Controllers/users_config.php';
 

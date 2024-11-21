@@ -7,7 +7,7 @@
 
 namespace api\Controllers;
 
-use \api\Models\CollectionModelInterface;
+use api\Models\CollectionModelInterface;
 
 interface ControllerInterface {
 	public function __construct(CollectionModelInterface $model);

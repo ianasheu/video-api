@@ -2,15 +2,15 @@
 if (!defined('ROOT_PATH')) define('ROOT_PATH', __DIR__);
 
 require_once ROOT_PATH . '/Autoloader.php';
-\api\Autoloader::register();
+api\Autoloader::register();
 
-use \api\Controllers\Routeur, 
-	\api\Controllers\MovieController,
-	\api\Controllers\DirectorController,
-	\api\Controllers\CategoryController,
-	\api\Models\MovieCollectionModel,
-	\api\Models\DirectorCollectionModel,
-	\api\Models\CategoryCollectionModel;
+use api\Controllers\Routeur, 
+	api\Controllers\MovieController,
+	api\Controllers\DirectorController,
+	api\Controllers\CategoryController,
+	api\Models\MovieCollectionModel,
+	api\Models\DirectorCollectionModel,
+	api\Models\CategoryCollectionModel;
 
 try {
 	$root = new Routeur();
