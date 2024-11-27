@@ -14,7 +14,11 @@ use api\Models\Database,
 
 class MovieCollectionModel implements CollectionModelInterface {
 
-	// Propriétés
+	/*
+	 * @property string TABLE
+	 * @property object $db
+	 * @property array $collection
+	 */
 	private const TABLE = 'movie';
 	private object $db;
 	private array $collection;
@@ -29,6 +33,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Evalue l existence d une propriete dans la classe item associee
+	 *
+	 * @param string $property
+	 * @return boolean
 	 */
 	public static function existsProperty($property) {
 		return (property_exists('\api\Models\MovieItemModel', $property));
@@ -36,6 +43,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Creer un film
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
 	 */
 	public function create(object $content) {
 
@@ -60,6 +70,10 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Associer un film a un realisateur
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
+	 * retourne zero si movie ou director ne sont pas des ids existants
 	 */
 	public function createDirector(object $content) {
 
@@ -83,6 +97,10 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Associer un film a une categorie
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
+	 * retourne zero si movie ou category ne sont pas des ids existants
 	 */
 	public function createCategory(object $content) {
 
@@ -106,10 +124,16 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire tous les films
+	 *
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @param boolean $detailed
+	 * @return array
 	 */
 	public function readAll($orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		if ($detailed != 'true') {
+		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE;
 		} else {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
@@ -131,7 +155,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
 				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
-				if ($detailed == 'true') {
+				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
@@ -153,10 +177,14 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire un film par l id
+	 *
+	 * @param int $id
+	 * @param boolean $detailed
+	 * @return array
 	 */
 	public function readById($id, $detailed=null) : array {
 
-		if ($detailed != 'true') {
+		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE id = :id;';
 		} else {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
@@ -174,7 +202,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			$row = $query->fetch(\PDO::FETCH_ASSOC);
 			extract($row);
 			$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
-			if ($detailed == 'true') {
+			if ($detailed) {
 				$directors = json_decode($directors);
 				$movie->director = array();
 				foreach ($directors as $d) {
@@ -195,6 +223,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire les realisateurs d un film
+	 *
+	 * @param int $id
+	 * @return array
 	 */
 	public function readDirector($id) : array {
 
@@ -218,6 +249,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire les categories d un film
+	 *
+	 * @param int $id
+	 * @return array
 	 */
 	public function readCategory($id) : array {
 
@@ -241,10 +275,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire des films par titre
+	 *
+	 * @param string $title
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @param boolean $detailed
+	 * @return array
 	 */
 	public function readByTitle($title, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		if ($detailed != 'true') {
+		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE;
 		} else {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
@@ -285,7 +326,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
 				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
-				if ($detailed == 'true') {
+				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
@@ -307,10 +348,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire des films par annee
+	 *
+	 * @param int $year
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @param boolean $detailed
+	 * @return array
 	 */
 	public function readByYear($year, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		if ($detailed != 'true') {
+		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE year LIKE :year';
 		} else {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
@@ -333,7 +381,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
 				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
-				if ($detailed == 'true') {
+				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
@@ -355,10 +403,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire des films par note
+	 *
+	 * @param float $rating
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @param boolean $detailed
+	 * @return array
 	 */
 	public function readByRating($rating, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
 
-		if ($detailed != 'true') {
+		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE rating LIKE :rating';
 		} else {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id as movieid, movie.title, movie.year, movie.rating, movie.poster, movie.allocine, '.
@@ -381,7 +436,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
 				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
-				if ($detailed == 'true') {
+				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
@@ -403,6 +458,9 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Mettre a jour un film
+	 * 
+	 * @param object $content
+	 * @return int|boolean nb de modif ou false
 	 */
 	public function update(object $content) {
 
@@ -427,7 +485,10 @@ class MovieCollectionModel implements CollectionModelInterface {
 	}
 
 	/*
-	 * Supprimer un film par id
+	 * Supprimer un film par l id
+	 * 
+	 * @param int $id
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteById($id) {
 
@@ -444,6 +505,10 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Dissocier un film d un realisateur
+	 * 
+	 * @param int $movie
+	 * @param int $director
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteDirector($movie, $director) {
 
@@ -461,6 +526,10 @@ class MovieCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Dissocier un film d une categorie
+	 * 
+	 * @param int $movie
+	 * @param int $category
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteCategory($movie, $category) {
 

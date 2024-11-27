@@ -11,7 +11,13 @@ use api\Models\CollectionModelInterface;
 
 class CategoryController implements ControllerInterface {
 
-	// Propriétés
+	/*
+	 * @property string ROUTE
+	 * @property object $model
+	 * @property int $response_code
+	 * @property string $response_content
+	 * @property int $response_count
+	 */
 	private const ROUTE = 'category';
 	private CollectionModelInterface $model;
 	private $response_code;
@@ -20,6 +26,8 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Constructeur
+	 *
+	 * @param object $model
 	 */
 	public function __construct(CollectionModelInterface $model) {
 		$this->model = $model;
@@ -27,13 +35,23 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Getter de route
+	 *
+	 * @return string
 	 */
 	public function getRoute() {
 		return self::ROUTE;
 	}
 
 	/*
-	 * Effectuer une requete
+	 * Effectuer une requete sur le modele
+	 *
+	 * @param string $method
+	 * @param array $url
+	 * @param array $filter
+	 * @param object $content
+	 * @param boolean $connected
+	 *
+	 * @return array
 	 */
 	public function callModel($method, array $url, array $filter=null, object $content=null, $connected=null) : array {
 
@@ -117,7 +135,7 @@ class CategoryController implements ControllerInterface {
 						if ((!$orderby || $orderby && \api\Models\MovieCollectionModel::existsProperty($orderby)) &&
 							(!$limit || $limit && is_numeric($limit)) &&
 							(!$offset || $limit && $offset && is_numeric($offset))) {
-							$this->getMovie($url[2], $orderby, $limit, $offset);
+							$this->getMovie($url[2], $orderby, intval($limit), intval($offset));
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -136,7 +154,7 @@ class CategoryController implements ControllerInterface {
 					if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
 						(!$limit || $limit && is_numeric($limit)) &&
 						(!$offset || $limit && $offset && is_numeric($offset))) {
-						$this->getAll($orderby, $limit, $offset);
+						$this->getAll($orderby, intval($limit), intval($offset));
 					} else {
 						return [400, 'wrong filter'];
 					}
@@ -190,6 +208,8 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Envoyer une categorie
+	 *
+	 * @param object $content
 	 */
 	private function post(object $content) {
 		$response_content = $this->model->create($content);
@@ -205,6 +225,8 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Associer une categorie a un film
+	 *
+	 * @param object $content
 	 */
 	private function postMovie(object $content) {
 		$response_content = $this->model->createMovie($content);
@@ -226,6 +248,10 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Obtenir tous les categories
+	 *
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
 	 */
 	private function getAll($orderby=null, $limit=null, $offset=null) {
 		list($response_content, $response_count) = $this->model->readAll($orderby, $limit, $offset);
@@ -242,6 +268,8 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Obtenir une categorie par l id
+	 *
+	 * @param int $id
 	 */
 	private function getById($id) {
 		list($response_content, $response_count) = $this->model->readById($id);
@@ -258,6 +286,11 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Obtenir les films d une categorie
+	 *
+	 * @param int $id
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
 	 */
 	private function getMovie($id, $orderby=null, $limit=null, $offset=null) {
 		list($response_content, $response_count) = $this->model->readMovie($id, $orderby, $limit, $offset);
@@ -274,6 +307,8 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Mettre a jour une categorie
+	 * 
+	 * @param object $content
 	 */
 	private function put(object $content) {
 		$response_content = $this->model->update($content);
@@ -293,6 +328,8 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Supprimer une categorie par id
+	 * 
+	 * @param int $id
 	 */
 	private function deleteById($id) {
 		$response_content = $this->model->deleteById($id);
@@ -312,6 +349,9 @@ class CategoryController implements ControllerInterface {
 
 	/*
 	 * Dissocier une categorie d un film
+	 * 
+	 * @param int $movie
+	 * @param int $category
 	 */
 	private function deleteMovie($movie, $category) {
 		$response_content = $this->model->deleteMovie($movie, $category);

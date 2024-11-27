@@ -10,7 +10,10 @@ namespace api\Models;
 require_once ROOT_PATH . '/Models/database_config.php';
 
 final class Database {
-	// Propriétés
+
+	/*
+	 * @property object $connection
+	 */
 	private static object $connection;
 
 	/*
@@ -25,6 +28,8 @@ final class Database {
 
 	/*
 	 * Deserialiseur leve une exception
+	 *
+	 * @throws Exception
 	 */
 	public function __wakeup() {
 		throw new \Exception('Cannot unserialize singleton');
@@ -32,6 +37,8 @@ final class Database {
 
 	/*
 	 * Getter de la connection
+	 *
+	 * @return object
 	 */
 	public static function getConnection() : object {
 
@@ -53,6 +60,11 @@ final class Database {
 		return self::$connection;
 	}
 
+	/*
+	 * Retourne le nombre de lignes affectees
+	 *
+	 * @return int
+	 */
 	public static function getRowsCount() {
 		$row = self::$connection->query('SELECT FOUND_ROWS();');
 		$count = $row->fetchColumn();

@@ -9,7 +9,14 @@ namespace api\Models;
 
 class MovieItemModel {
 
-	// Propriétés
+	/*
+	 * @property int $id
+	 * @property string $title
+	 * @property int $year
+	 * @property float $rating
+	 * @property string $poster
+	 * @property string $allocine
+	 */
 	public $id;
 	public $title;
 	public $year;
@@ -19,6 +26,13 @@ class MovieItemModel {
 
 	/*
 	 * Constructeur
+	 *
+	 * @param int $id
+	 * @param string $title
+	 * @param int $year
+	 * @param float $rating
+	 * @param string $poster
+	 * @param string $allocine
 	 */
 	public function __construct($id=null, $title=null, $year=null, $rating=null, $poster=null, $allocine=null) {
 		$this->id = $id;

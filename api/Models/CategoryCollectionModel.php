@@ -13,7 +13,11 @@ use api\Models\Database,
 
 class CategoryCollectionModel implements CollectionModelInterface {
 
-	// Propriétés
+	/*
+	 * @property string TABLE
+	 * @property object $db
+	 * @property array $collection
+	 */
 	private const TABLE = 'category';
 	private object $db;
 	private array $collection;
@@ -28,6 +32,9 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Evalue l existence d une propriete dans la classe item associee
+	 *
+	 * @param string $property
+	 * @return boolean
 	 */
 	public static function existsProperty($property) {
 		return (property_exists('\api\Models\CategoryItemModel', $property));
@@ -35,6 +42,9 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Creer une categorie
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
 	 */
 	public function create(object $content) {
 
@@ -51,6 +61,10 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Associer une categorie a un film
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
+	 * retourne zero si movie ou category ne sont pas des ids existants
 	 */
 	public function createMovie(object $content) {
 
@@ -74,6 +88,11 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire tous les categories
+	 *
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
 	 */
 	public function readAll($orderby=null, $limit=null, $offset=null) : array {
 
@@ -100,6 +119,9 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire une categorie par l id
+	 *
+	 * @param int $id
+	 * @return array
 	 */
 	public function readById($id) : array {
 
@@ -121,6 +143,12 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire les films d une category
+	 *
+	 * @param int $id
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
 	 */
 	public function readMovie($id, $orderby=null, $limit=null, $offset=null) : array {
 
@@ -149,6 +177,9 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Mettre a jour une categorie
+	 * 
+	 * @param object $content
+	 * @return int|boolean nb de modif ou false
 	 */
 	public function update(object $content) {
 
@@ -165,7 +196,10 @@ class CategoryCollectionModel implements CollectionModelInterface {
 	}
 
 	/*
-	 * Supprimer une categorie par id
+	 * Supprimer une categorie par l id
+	 * 
+	 * @param int $id
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteById($id) {
 
@@ -182,6 +216,10 @@ class CategoryCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Dissocier une categorie d un film
+	 * 
+	 * @param int $movie
+	 * @param int $category
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteMovie($movie, $category) {
 

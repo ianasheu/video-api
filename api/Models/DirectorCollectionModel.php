@@ -13,7 +13,11 @@ use api\Models\Database,
 
 class DirectorCollectionModel implements CollectionModelInterface {
 
-	// Propriétés
+	/*
+	 * @property string TABLE
+	 * @property object $db
+	 * @property array $collection
+	 */
 	private const TABLE = 'director';
 	private object $db;
 	private array $collection;
@@ -28,6 +32,9 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Evalue l existence d une propriete dans la classe item associee
+	 *
+	 * @param string $property
+	 * @return boolean
 	 */
 	public static function existsProperty($property) {
 		return (property_exists('\api\Models\DirectorItemModel', $property));
@@ -35,6 +42,9 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Creer un realisateur
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
 	 */
 	public function create(object $content) {
 
@@ -53,6 +63,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Associer un realisateur a un film
+	 *
+	 * @param object $content
+	 * @return int|boolean id cree ou false
+	 * retourne zero si movie ou director ne sont pas des ids existants
 	 */
 	public function createMovie(object $content) {
 
@@ -76,6 +90,11 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire tous les realisateurs
+	 *
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
 	 */
 	public function readAll($orderby=null, $limit=null, $offset=null) : array {
 
@@ -102,6 +121,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire un realisateur par l id
+	 *
+	 * @param int $id
+	 * @param boolean $detailed
+	 * @return array
 	 */
 	public function readById($id, $detailed=null) : array {
 
@@ -114,7 +137,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 			$row = $query->fetch(\PDO::FETCH_ASSOC);
 			extract($row);
 			$director = new DirectorItemModel($id, $name, $country);
-			if ($detailed == 'true') {			
+			if ($detailed) {			
 				list($director->movie, $count_movie) = $this->readMovie($id, 'year');
 			}
 			array_push($this->collection, $director);
@@ -126,6 +149,12 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire les films d un realisateur
+	 *
+	 * @param int $id
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
 	 */
 	public function readMovie($id, $orderby=null, $limit=null, $offset=null) : array {
 
@@ -154,6 +183,12 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire des realisateurs par nom
+	 *
+	 * @param string $name
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
 	 */
 	public function readByName($name, $orderby=null, $limit=null, $offset=null) : array {
 
@@ -181,6 +216,12 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Lire des realisateurs par pays
+	 *
+	 * @param string $country
+	 * @param string $orderby
+	 * @param int $limit
+	 * @param int $offset
+	 * @return array
 	 */
 	public function readByCountry($country, $orderby=null, $limit=null, $offset=null) : array {
 
@@ -208,6 +249,9 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Mettre a jour un realisateur
+	 * 
+	 * @param object $content
+	 * @return int|boolean nb de modif ou false
 	 */
 	public function update(object $content) {
 
@@ -228,7 +272,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	}
 
 	/*
-	 * Supprimer un realisateur par id
+	 * Supprimer un realisateur par l id
+	 * 
+	 * @param int $id
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteById($id) {
 
@@ -245,6 +292,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 
 	/*
 	 * Dissocier un realisateur d un film
+	 * 
+	 * @param int $movie
+	 * @param int $director
+	 * @return int|boolean nb de supression ou false
 	 */
 	public function deleteMovie($movie, $director) {
 

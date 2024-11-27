@@ -12,7 +12,17 @@ use api\Controllers\ControllerInterface;
 require_once ROOT_PATH . '/Controllers/users_config.php';
 
 class Routeur {
-	// Propriétés
+
+	/*
+	 * @property string API_PATH
+	 * @property string $method
+	 * @property array $url
+	 * @property array $filter
+	 * @property object $content
+	 * @property boolean $registered
+	 * @property boolean $authenticated
+	 * @property array $controller
+	 */
 	private const API_PATH = '/video/api/';
 	private $method;
 	private array $url;
@@ -79,13 +89,17 @@ class Routeur {
 	
 	/*
 	 * Ajouter un controller
+	 *
+	 * @param object $controller
 	 */
 	public function addController(ControllerInterface $controller) : void {
 		array_push($this->controller, $controller);
 	}
 
 	/*
-	 * Effectuer une methode
+	 * Effectuer une requete sur un controlleur
+	 *
+	 * @return array
 	 */
 	public function callController() : array {
 
