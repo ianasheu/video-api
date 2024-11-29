@@ -5,6 +5,8 @@
  *
  *------------------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Controllers;
 
 use api\Controllers\ControllerInterface;

@@ -5,9 +5,14 @@
  *
  *--------------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Controllers;
 
-use api\Models\CollectionModelInterface;
+use api\Controllers\ControllerInterface,
+	api\Models\CollectionModelInterface,
+	api\Models\CategoryCollectionModel,
+	api\Models\MovieCollectionModel;
 
 class CategoryController implements ControllerInterface {
 
@@ -38,7 +43,7 @@ class CategoryController implements ControllerInterface {
 	 *
 	 * @return string
 	 */
-	public function getRoute() {
+	public function getRoute() : string {
 		return self::ROUTE;
 	}
 
@@ -49,17 +54,16 @@ class CategoryController implements ControllerInterface {
 	 * @param array $url
 	 * @param array $filter
 	 * @param object $content
-	 * @param boolean $connected
-	 *
+	 * @param bool $connected
 	 * @return array
 	 */
-	public function callModel($method, array $url, array $filter=null, object $content=null, $connected=null) : array {
+	public function callModel(string $method, array $url, ?array $filter=null, ?object $content=null, ?bool $connected=null) : array {
 
 		$orderby = null;
 		$limit = null;
 		$offset = null;
 		$filterAvailable = array('orderby', 'limit', 'offset');
-		foreach ($filter as $fltr) {
+		foreach ((array)$filter as $fltr) {
 			if (!str_contains($fltr, '=')) {
 				return [400, 'wrong filter'];
 			}
@@ -132,17 +136,17 @@ class CategoryController implements ControllerInterface {
 				}
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2])) {
 					if (isset($url[3]) && $url[3]=='movie' && !isset($url[4])) {
-						if ((!$orderby || $orderby && \api\Models\MovieCollectionModel::existsProperty($orderby)) &&
+						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
 							(!$limit || $limit && is_numeric($limit)) &&
 							(!$offset || $limit && $offset && is_numeric($offset))) {
-							$this->getMovie($url[2], $orderby, intval($limit), intval($offset));
+							$this->getMovie(intval($url[2]), $orderby, intval($limit), intval($offset));
 						} else {
 							return [400, 'wrong filter'];
 						}
 					} else
 					if (!isset($url[3])) {
 						if (!$orderby && !$limit && !$offset) {
-							$this->getById($url[2]);
+							$this->getById(intval($url[2]));
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -151,7 +155,7 @@ class CategoryController implements ControllerInterface {
 					}
 				} else
 				if (!isset($url[1])) {
-					if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+					if ((!$orderby || $orderby && CategoryCollectionModel::existsProperty($orderby)) &&
 						(!$limit || $limit && is_numeric($limit)) &&
 						(!$offset || $limit && $offset && is_numeric($offset))) {
 						$this->getAll($orderby, intval($limit), intval($offset));
@@ -186,7 +190,7 @@ class CategoryController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
 					isset($url[3]) && $url[3]=='movie' &&
 					isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
-					$this->deleteMovie($url[5], $url[2]);
+					$this->deleteMovie(intval($url[5]), intval($url[2]));
 				} else
 				if (isset($url[1]) && $url[1]=='id' &&
 					isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
@@ -211,7 +215,7 @@ class CategoryController implements ControllerInterface {
 	 *
 	 * @param object $content
 	 */
-	private function post(object $content) {
+	private function post(object $content) : void {
 		$response_content = $this->model->create($content);
 
 		if ($response_content === false) {
@@ -228,7 +232,7 @@ class CategoryController implements ControllerInterface {
 	 *
 	 * @param object $content
 	 */
-	private function postMovie(object $content) {
+	private function postMovie(object $content) : void {
 		$response_content = $this->model->createMovie($content);
 
 		if ($response_content === false) {
@@ -253,7 +257,7 @@ class CategoryController implements ControllerInterface {
 	 * @param int $limit
 	 * @param int $offset
 	 */
-	private function getAll($orderby=null, $limit=null, $offset=null) {
+	private function getAll(?string $orderby=null, ?int $limit=null, ?int $offset=null) : void {
 		list($response_content, $response_count) = $this->model->readAll($orderby, $limit, $offset);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -271,7 +275,7 @@ class CategoryController implements ControllerInterface {
 	 *
 	 * @param int $id
 	 */
-	private function getById($id) {
+	private function getById(int $id) : void {
 		list($response_content, $response_count) = $this->model->readById($id);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -292,7 +296,7 @@ class CategoryController implements ControllerInterface {
 	 * @param int $limit
 	 * @param int $offset
 	 */
-	private function getMovie($id, $orderby=null, $limit=null, $offset=null) {
+	private function getMovie(int $id, ?string $orderby=null, ?int $limit=null, ?int $offset=null) : void {
 		list($response_content, $response_count) = $this->model->readMovie($id, $orderby, $limit, $offset);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -310,7 +314,7 @@ class CategoryController implements ControllerInterface {
 	 * 
 	 * @param object $content
 	 */
-	private function put(object $content) {
+	private function put(object $content) : void {
 		$response_content = $this->model->update($content);
 
 		if ($response_content === false) {
@@ -331,7 +335,7 @@ class CategoryController implements ControllerInterface {
 	 * 
 	 * @param int $id
 	 */
-	private function deleteById($id) {
+	private function deleteById(int $id) : void {
 		$response_content = $this->model->deleteById($id);
 
 		if ($response_content === false) {
@@ -353,7 +357,7 @@ class CategoryController implements ControllerInterface {
 	 * @param int $movie
 	 * @param int $category
 	 */
-	private function deleteMovie($movie, $category) {
+	private function deleteMovie(int $movie, int $category) : void {
 		$response_content = $this->model->deleteMovie($movie, $category);
 
 		if ($response_content === false) {

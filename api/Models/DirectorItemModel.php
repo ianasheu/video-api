@@ -5,6 +5,8 @@
  *
  *----------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Models;
 
 class DirectorItemModel {
@@ -14,9 +16,9 @@ class DirectorItemModel {
 	 * @property string $name
 	 * @property string $country
 	 */
-	public $id;
-	public $name;
-	public $country;
+	public int $id;
+	public string $name;
+	public ?string $country;
 
 	/*
 	 * Constructeur
@@ -25,7 +27,7 @@ class DirectorItemModel {
 	 * @param string $name
 	 * @param string $country
 	 */
-	public function __construct($id=null, $name=null, $country=null) {
+	public function __construct(int $id, string $name, ?string $country=null) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->country = $country;

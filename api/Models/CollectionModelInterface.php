@@ -5,6 +5,8 @@
  *
  *-----------------------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Models;
 
 interface CollectionModelInterface {
@@ -17,17 +19,17 @@ interface CollectionModelInterface {
 	 * Evalue l existence d une propriete dans la classe item associee
 	 *
 	 * @param string $property
-	 * @return boolean
+	 * @return bool
 	 */
-	public static function existsProperty($property);
+	public static function existsProperty(string $property) : bool;
 
 	/*
 	 * Creer
 	 *
 	 * @param object $content
-	 * @return int|boolean id cree ou false
+	 * @return int|bool id cree ou false
 	 */
-	public function create(object $content);
+	public function create(object $content) : int|bool;
 
 	/*
 	 * Lire tous
@@ -37,7 +39,7 @@ interface CollectionModelInterface {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function readAll($orderby=null, $limit=null, $offset=null) : array;
+	public function readAll(?string $orderby=null, ?int $limit=null, ?int $offset=null) : array;
 
 	/*
 	 * Lire par l id
@@ -45,21 +47,21 @@ interface CollectionModelInterface {
 	 * @param int $id
 	 * @return array
 	 */
-	public function readById($id) : array;
+	public function readById(int $id) : array;
 
 	/*
 	 * Mettre a jour
 	 * 
 	 * @param object $content
-	 * @return int|boolean nb de modif ou false
+	 * @return int|bool nb de modif ou false
 	 */
-	public function update(object $content);
+	public function update(object $content) : int|bool;
 
 	/*
 	 * Supprimer par l id
 	 * 
 	 * @param int $id
-	 * @return int|boolean nb de supression ou false
+	 * @return int|bool nb de supression ou false
 	 */
-	public function deleteById($id);
+	public function deleteById(int $id) : int|bool;
 }

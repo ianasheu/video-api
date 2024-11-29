@@ -5,9 +5,12 @@
  *
  *------------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Models;
 
-use api\Models\Database,
+use api\Models\CollectionModelInterface,
+	api\Models\Database,
 	api\Models\DirectorItemModel,
 	api\Models\MovieItemModel;
 
@@ -34,19 +37,19 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * Evalue l existence d une propriete dans la classe item associee
 	 *
 	 * @param string $property
-	 * @return boolean
+	 * @return bool
 	 */
-	public static function existsProperty($property) {
-		return (property_exists('\api\Models\DirectorItemModel', $property));
+	public static function existsProperty(string $property) : bool {
+		return (property_exists('api\Models\DirectorItemModel', $property));
 	}
 
 	/*
 	 * Creer un realisateur
 	 *
 	 * @param object $content
-	 * @return int|boolean id cree ou false
+	 * @return int|bool id cree ou false
 	 */
-	public function create(object $content) {
+	public function create(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO ' . self::TABLE . ' (name, country) VALUES (:name, :country);');
@@ -65,10 +68,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * Associer un realisateur a un film
 	 *
 	 * @param object $content
-	 * @return int|boolean id cree ou false
+	 * @return int|bool id cree ou false
 	 * retourne zero si movie ou director ne sont pas des ids existants
 	 */
-	public function createMovie(object $content) {
+	public function createMovie(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO moviedirector (movie, director) VALUES (:movie, :director);');
@@ -96,7 +99,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function readAll($orderby=null, $limit=null, $offset=null) : array {
+	public function readAll(?string $orderby=null, ?int $limit=null, ?int $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE;
 		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
@@ -110,7 +113,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$director = new DirectorItemModel($id, $name, $country);
+				$director = new DirectorItemModel(intval($id), $name, $country);
 				array_push($this->collection, $director);
 			}
 			return [$this->collection, Database::getRowsCount()];
@@ -123,10 +126,10 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * Lire un realisateur par l id
 	 *
 	 * @param int $id
-	 * @param boolean $detailed
+	 * @param bool $detailed
 	 * @return array
 	 */
-	public function readById($id, $detailed=null) : array {
+	public function readById(int $id, ?bool $detailed=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE . ' WHERE id = :id;';
 		$query = $this->db->prepare($sql);
@@ -136,7 +139,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			$row = $query->fetch(\PDO::FETCH_ASSOC);
 			extract($row);
-			$director = new DirectorItemModel($id, $name, $country);
+			$director = new DirectorItemModel(intval($id), $name, $country);
 			if ($detailed) {			
 				list($director->movie, $count_movie) = $this->readMovie($id, 'year');
 			}
@@ -156,7 +159,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function readMovie($id, $orderby=null, $limit=null, $offset=null) : array {
+	public function readMovie(int $id, ?string $orderby=null, ?int $limit=null, ?int $offset=null) : array {
 
 		$result = array();
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS movie.id, movie.title, movie.year, movie.rating, movie.poster, movie.allocine FROM movie, moviedirector WHERE moviedirector.movie = movie.id AND moviedirector.director = :id';
@@ -172,7 +175,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$mov = new MovieItemModel($id, $title, $year, $rating, $poster, $allocine);
+				$mov = new MovieItemModel(intval($id), $title, intval($year), floatval($rating), $poster, $allocine);
 				array_push($result, $mov);
 			}
 			return [$result, Database::getRowsCount()];
@@ -190,7 +193,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function readByName($name, $orderby=null, $limit=null, $offset=null) : array {
+	public function readByName(string $name, ?string $orderby=null, ?int $limit=null, ?int $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE . ' WHERE name LIKE :name';
 		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
@@ -205,7 +208,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$director = new DirectorItemModel($id, $name, $country);
+				$director = new DirectorItemModel(intval($id), $name, $country);
 				array_push($this->collection, $director);
 			}
 			return [$this->collection, Database::getRowsCount()];
@@ -223,7 +226,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function readByCountry($country, $orderby=null, $limit=null, $offset=null) : array {
+	public function readByCountry(string $country, ?string $orderby=null, ?int $limit=null, ?int $offset=null) : array {
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS id, name, country FROM ' . self::TABLE . ' WHERE country LIKE :country';
 		$sql = ($orderby ? $sql . " ORDER BY {$orderby} ASC" : $sql);
@@ -238,7 +241,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$director = new DirectorItemModel($id, $name, $country);
+				$director = new DirectorItemModel(intval($id), $name, $country);
 				array_push($this->collection, $director);
 			}
 			return [$this->collection, Database::getRowsCount()];
@@ -251,9 +254,9 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * Mettre a jour un realisateur
 	 * 
 	 * @param object $content
-	 * @return int|boolean nb de modif ou false
+	 * @return int|bool nb de modif ou false
 	 */
-	public function update(object $content) {
+	public function update(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('UPDATE ' . self::TABLE . ' SET name = :name, country = :country WHERE id=:id;');
@@ -277,7 +280,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * @param int $id
 	 * @return int|boolean nb de supression ou false
 	 */
-	public function deleteById($id) {
+	public function deleteById(int $id) : int|bool {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM ' . self::TABLE . ' WHERE id=:id;');
@@ -297,7 +300,7 @@ class DirectorCollectionModel implements CollectionModelInterface {
 	 * @param int $director
 	 * @return int|boolean nb de supression ou false
 	 */
-	public function deleteMovie($movie, $director) {
+	public function deleteMovie(int $movie, int $director) : int|bool {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM moviedirector WHERE movie=:movie AND director=:director;');

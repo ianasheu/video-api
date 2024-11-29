@@ -5,6 +5,8 @@
  *
  *---------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Models;
 
 class CategoryItemModel {
@@ -13,8 +15,8 @@ class CategoryItemModel {
 	 * @property int $id
 	 * @property string $tag
 	 */
-	public $id;
-	public $tag;
+	public int $id;
+	public string $tag;
 
 	/*
 	 * Constructeur
@@ -22,7 +24,7 @@ class CategoryItemModel {
 	 * @param int $id
 	 * @param string $tag
 	 */
-	public function __construct($id=null, $tag=null) {
+	public function __construct(int $id, string $tag) {
 		$this->id = $id;
 		$this->tag = $tag;
 	}

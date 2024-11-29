@@ -5,9 +5,13 @@
  *
  *---------------------------*/
 
+declare(strict_types=1);
+
 namespace api\Controllers;
 
-use api\Models\CollectionModelInterface;
+use api\Controllers\ControllerInterface,
+	api\Models\CollectionModelInterface,
+	api\Models\MovieCollectionModel;
 
 class MovieController implements ControllerInterface {
 
@@ -38,7 +42,7 @@ class MovieController implements ControllerInterface {
 	 *
 	 * @return string
 	 */
-	public function getRoute() {
+	public function getRoute() : string {
 		return self::ROUTE;
 	}
 
@@ -49,18 +53,17 @@ class MovieController implements ControllerInterface {
 	 * @param array $url
 	 * @param array $filter
 	 * @param object $content
-	 * @param boolean $connected
-	 *
+	 * @param bool $connected
 	 * @return array
 	 */
-	public function callModel($method, array $url, array $filter=null, object $content=null, $connected=null) : array {
+	public function callModel(string $method, array $url, ?array $filter=null, ?object $content=null, ?bool $connected=null) : array {
 
 		$orderby = null;
 		$limit = null;
 		$offset = null;
 		$detailed = null;
 		$filterAvailable = array('orderby', 'limit', 'offset', 'detailed');
-		foreach ($filter as $fltr) {
+		foreach ((array)$filter as $fltr) {
 			if (!str_contains($fltr, '=')) {
 				return [400, 'wrong filter'];
 			}
@@ -146,14 +149,14 @@ class MovieController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2])) {
 					if (isset($url[3]) && $url[3]=='director' && !isset($url[4])) {
 						if (!$filter) {
-							$this->getDirector($url[2]);
+							$this->getDirector(intval($url[2]));
 						} else {
 							return [400, 'wrong filter'];
 						}
 					} else
 					if (isset($url[3]) && $url[3]=='category' && !isset($url[4])) {
 						if (!$filter) {
-							$this->getCategory($url[2]);
+							$this->getCategory(intval($url[2]));
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -161,7 +164,7 @@ class MovieController implements ControllerInterface {
 					if (!isset($url[3])) {
 						if ((!$detailed || $detailed=='true' || $detailed=='false')
 							&& !$orderby && !$limit && !$offset) {
-							$this->getById($url[2], ($detailed=='true'?true:false));
+							$this->getById(intval($url[2]), ($detailed=='true'?true:false));
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -171,7 +174,7 @@ class MovieController implements ControllerInterface {
 				} else
 				if (isset($url[1]) && $url[1]=='title') {
 					if (isset($url[2]) && $url[2]!='' && !isset($url[3])) {
-						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
 							(!$limit || $limit && is_numeric($limit)) &&
 							(!$offset || $limit && $offset && is_numeric($offset)) &&
 							(!$detailed || $detailed=='true' || $detailed=='false')) {
@@ -186,7 +189,7 @@ class MovieController implements ControllerInterface {
 				} else
 				if (isset($url[1]) && $url[1]=='year') {
 					if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
-						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
 							(!$limit || $limit && is_numeric($limit)) &&
 							(!$offset || $limit && $offset && is_numeric($offset)) &&
 							(!$detailed || $detailed=='true' || $detailed=='false')) {
@@ -200,7 +203,7 @@ class MovieController implements ControllerInterface {
 				} else
 				if (isset($url[1]) && $url[1]=='rating') {
 					if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
-						if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
 							(!$limit || $limit && is_numeric($limit)) &&
 							(!$offset || $limit && $offset && is_numeric($offset)) &&
 							(!$detailed || $detailed=='true' || $detailed=='false')) {
@@ -213,7 +216,7 @@ class MovieController implements ControllerInterface {
 					}
 				} else
 				if (!isset($url[1])) {
-					if ((!$orderby || $orderby && $this->model->existsProperty($orderby)) &&
+					if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
 						(!$limit || $limit && is_numeric($limit)) &&
 						(!$offset || $limit && $offset && is_numeric($offset)) &&
 						(!$detailed || $detailed=='true' || $detailed=='false')) {
@@ -251,16 +254,16 @@ class MovieController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
 					isset($url[3]) && $url[3]=='director' &&
 					isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
-					$this->deleteDirector($url[2], $url[5]);
+					$this->deleteDirector(intval($url[2]), intval($url[5]));
 				} else
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2]) &&
 					isset($url[3]) && $url[3]=='category' &&
 					isset($url[4]) && $url[4]=='id' && isset($url[5]) && $url[5]!='' && is_numeric($url[5]) && !isset($url[6])) {
-					$this->deleteCategory($url[2], $url[5]);
+					$this->deleteCategory(intval($url[2]), intval($url[5]));
 				} else
 				if (isset($url[1]) && $url[1]=='id' &&
 					isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
-					$this->deleteById($url[2]);
+					$this->deleteById(intval($url[2]));
 				} else {
 					return [400, 'wrong url'];
 				}
@@ -281,7 +284,7 @@ class MovieController implements ControllerInterface {
 	 *
 	 * @param object $content
 	 */
-	private function post(object $content) {
+	private function post(object $content) : void {
 		$response_content = $this->model->create($content);
 
 		if ($response_content === false) {
@@ -298,7 +301,7 @@ class MovieController implements ControllerInterface {
 	 *
 	 * @param object $content
 	 */
-	private function postDirector(object $content) {
+	private function postDirector(object $content) : void {
 		$response_content = $this->model->createDirector($content);
 
 		if ($response_content === false) {
@@ -321,7 +324,7 @@ class MovieController implements ControllerInterface {
 	 *
 	 * @param object $content
 	 */
-	private function postCategory(object $content) {
+	private function postCategory(object $content) : void {
 		$response_content = $this->model->createCategory($content);
 
 		if ($response_content === false) {
@@ -345,9 +348,9 @@ class MovieController implements ControllerInterface {
 	 * @param string $orderby
 	 * @param int $limit
 	 * @param int $offset
-	 * @param boolean $detailed
+	 * @param bool $detailed
 	 */
-	private function getAll($orderby=null, $limit=null, $offset=null, $detailed=null) {
+	private function getAll(?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : void {
 		list($response_content, $response_count) = $this->model->readAll($orderby, $limit, $offset, $detailed);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -364,9 +367,9 @@ class MovieController implements ControllerInterface {
 	 * Obtenir un film par l id
 	 *
 	 * @param int $id
-	 * @param boolean $detailed
+	 * @param bool $detailed
 	 */
-	private function getById($id, $detailed=null) {
+	private function getById(int $id, ?bool $detailed=null) : void {
 		list($response_content, $response_count) = $this->model->readById($id, $detailed);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -384,7 +387,7 @@ class MovieController implements ControllerInterface {
 	 *
 	 * @param int $id
 	 */
-	private function getDirector($id) {
+	private function getDirector(int $id) : void {
 		list($response_content, $response_count) = $this->model->readDirector($id);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -402,7 +405,7 @@ class MovieController implements ControllerInterface {
 	 *
 	 * @param int $id
 	 */
-	private function getCategory($id) {
+	private function getCategory(int $id) : void {
 		list($response_content, $response_count) = $this->model->readCategory($id);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -422,9 +425,9 @@ class MovieController implements ControllerInterface {
 	 * @param string $orderby
 	 * @param int $limit
 	 * @param int $offset
-	 * @param boolean $detailed
+	 * @param bool $detailed
 	 */
-	private function getByTitle($title, $orderby=null, $limit=null, $offset=null, $detailed=null) {
+	private function getByTitle(string $title, ?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : void {
 		$title = str_replace('*', '%', $title);
 		list($response_content, $response_count) = $this->model->readByTitle($title, $orderby, $limit, $offset, $detailed);
 
@@ -445,9 +448,9 @@ class MovieController implements ControllerInterface {
 	 * @param string $orderby
 	 * @param int $limit
 	 * @param int $offset
-	 * @param boolean $detailed
+	 * @param bool $detailed
 	 */
-	private function getByYear($year, $orderby=null, $limit=null, $offset=null, $detailed=null) {
+	private function getByYear(int $year, ?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : void {
 		list($response_content, $response_count) = $this->model->readByYear($year, $orderby, $limit, $offset, $detailed);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -467,9 +470,9 @@ class MovieController implements ControllerInterface {
 	 * @param string $orderby
 	 * @param int $limit
 	 * @param int $offset
-	 * @param boolean $detailed
+	 * @param bool $detailed
 	 */
-	private function getByRating($rating, $orderby=null, $limit=null, $offset=null, $detailed=null) {
+	private function getByRating(float $rating, ?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : void {
 		list($response_content, $response_count) = $this->model->readByRating($rating, $orderby, $limit, $offset, $detailed);
 
 		if (!is_array($response_content) || empty($response_content)) {
@@ -487,7 +490,7 @@ class MovieController implements ControllerInterface {
 	 * 
 	 * @param object $content
 	 */
-	private function put(object $content) {
+	private function put(object $content) : void {
 		$response_content = $this->model->update($content);
 
 		if ($response_content === false) {
@@ -508,7 +511,7 @@ class MovieController implements ControllerInterface {
 	 * 
 	 * @param int $id
 	 */
-	private function deleteById($id) {
+	private function deleteById(int $id) : void {
 		$response_content = $this->model->deleteById($id);
 
 		if ($response_content === false) {
@@ -530,7 +533,7 @@ class MovieController implements ControllerInterface {
 	 * @param int $movie
 	 * @param int $director
 	 */
-	private function deleteDirector($movie, $director) {
+	private function deleteDirector(int $movie, int $director) : void {
 		$response_content = $this->model->deleteDirector($movie, $director);
 
 		if ($response_content === false) {
@@ -552,7 +555,7 @@ class MovieController implements ControllerInterface {
 	 * @param int $movie
 	 * @param int $category
 	 */
-	private function deleteCategory($movie, $category) {
+	private function deleteCategory(int $movie, int $category) : void {
 		$response_content = $this->model->deleteCategory($movie, $category);
 
 		if ($response_content === false) {

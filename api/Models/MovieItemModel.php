@@ -5,6 +5,8 @@
  *
  *---------------------*/
 
+declare(strict_types=1);
+
 namespace api\Models;
 
 class MovieItemModel {
@@ -17,12 +19,12 @@ class MovieItemModel {
 	 * @property string $poster
 	 * @property string $allocine
 	 */
-	public $id;
-	public $title;
-	public $year;
-	public $rating;
-	public $poster;
-	public $allocine;
+	public int $id;
+	public string $title;
+	public ?int $year;
+	public ?float $rating;
+	public ?string $poster;
+	public ?string $allocine;
 
 	/*
 	 * Constructeur
@@ -34,7 +36,7 @@ class MovieItemModel {
 	 * @param string $poster
 	 * @param string $allocine
 	 */
-	public function __construct($id=null, $title=null, $year=null, $rating=null, $poster=null, $allocine=null) {
+	public function __construct(int $id, string $title, ?int $year=null, ?float $rating=null, ?string $poster=null, ?string $allocine=null) {
 		$this->id = $id;
 		$this->title = $title;
 		$this->year = $year;

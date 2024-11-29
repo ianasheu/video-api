@@ -5,9 +5,12 @@
  *
  *-----------------------*/
 
+declare(strict_types=1);
+
 namespace api\Models;
 
-use api\Models\Database,
+use api\Models\CollectionModelInterface,
+	api\Models\Database,
 	api\Models\MovieItemModel,
 	api\Models\DirectorItemModel,
 	api\Models\CategoryItemModel;
@@ -37,8 +40,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param string $property
 	 * @return boolean
 	 */
-	public static function existsProperty($property) {
-		return (property_exists('\api\Models\MovieItemModel', $property));
+	public static function existsProperty(string $property) : bool {
+		return (property_exists('api\Models\MovieItemModel', $property));
 	}
 
 	/*
@@ -47,7 +50,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param object $content
 	 * @return int|boolean id cree ou false
 	 */
-	public function create(object $content) {
+	public function create(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO ' . self::TABLE . ' (title, year, rating, poster, allocine) VALUES (:title, :year, :rating, :poster, :allocine);');
@@ -75,7 +78,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @return int|boolean id cree ou false
 	 * retourne zero si movie ou director ne sont pas des ids existants
 	 */
-	public function createDirector(object $content) {
+	public function createDirector(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO moviedirector (movie, director) VALUES (:movie, :director);');
@@ -102,7 +105,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @return int|boolean id cree ou false
 	 * retourne zero si movie ou category ne sont pas des ids existants
 	 */
-	public function createCategory(object $content) {
+	public function createCategory(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('INSERT INTO moviecategory (movie, category) VALUES (:movie, :category);');
@@ -131,7 +134,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param boolean $detailed
 	 * @return array
 	 */
-	public function readAll($orderby=null, $limit=null, $offset=null, $detailed=null) : array {
+	public function readAll(?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : array {
 
 		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE;
@@ -154,17 +157,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel(intval($movieid), $title, intval($year), floatval($rating), $poster, $allocine);
 				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
-						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+						array_push($movie->director, new DirectorItemModel(intval($d->id), $d->name, $d->country));
 					}
 					$categories = json_decode($categories);
 					$movie->category = array();
 					foreach ($categories as $c) {
-						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+						array_push($movie->category, new CategoryItemModel(intval($c->id), $c->tag));
 					}
 				}
 				array_push($this->collection, $movie);
@@ -182,7 +185,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param boolean $detailed
 	 * @return array
 	 */
-	public function readById($id, $detailed=null) : array {
+	public function readById(int $id, ?bool $detailed=null) : array {
 
 		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE id = :id;';
@@ -201,17 +204,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			$row = $query->fetch(\PDO::FETCH_ASSOC);
 			extract($row);
-			$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+			$movie = new MovieItemModel(intval($movieid), $title, intval($year), floatval($rating), $poster, $allocine);
 			if ($detailed) {
 				$directors = json_decode($directors);
 				$movie->director = array();
 				foreach ($directors as $d) {
-					array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+					array_push($movie->director, new DirectorItemModel(intval($d->id), $d->name, $d->country));
 				}
 				$categories = json_decode($categories);
 				$movie->category = array();
 				foreach ($categories as $c) {
-					array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+					array_push($movie->category, new CategoryItemModel(intval($c->id), $c->tag));
 				}
 			}
 			array_push($this->collection, $movie);
@@ -227,7 +230,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param int $id
 	 * @return array
 	 */
-	public function readDirector($id) : array {
+	public function readDirector(int $id) : array {
 
 		$result = array();
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS director.id, director.name, director.country FROM director, moviedirector WHERE moviedirector.director = director.id AND moviedirector.movie = :id ORDER BY director.name ASC;';
@@ -238,7 +241,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$dir = new DirectorItemModel($id, $name, $country);
+				$dir = new DirectorItemModel(intval($id), $name, $country);
 				array_push($result, $dir);
 			}
 			return [$result, Database::getRowsCount()];
@@ -253,7 +256,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param int $id
 	 * @return array
 	 */
-	public function readCategory($id) : array {
+	public function readCategory(int $id) : array {
 
 		$result = array();
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS category.id, category.tag FROM category, moviecategory WHERE moviecategory.category = category.id AND moviecategory.movie = :id ORDER BY moviecategory.id ASC;';
@@ -264,7 +267,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$cat = new CategoryItemModel($id, $tag);
+				$cat = new CategoryItemModel(intval($id), $tag);
 				array_push($result, $cat);
 			}
 			return [$result, Database::getRowsCount()];
@@ -283,7 +286,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param boolean $detailed
 	 * @return array
 	 */
-	public function readByTitle($title, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
+	public function readByTitle(string $title, ?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : array {
 
 		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE;
@@ -325,17 +328,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel(intval($movieid), $title, intval($year), floatval($rating), $poster, $allocine);
 				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
-						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+						array_push($movie->director, new DirectorItemModel(intval($d->id), $d->name, $d->country));
 					}
 					$categories = json_decode($categories);
 					$movie->category = array();
 					foreach ($categories as $c) {
-						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+						array_push($movie->category, new CategoryItemModel(intval($c->id), $c->tag));
 					}
 				}
 				array_push($this->collection, $movie);
@@ -356,7 +359,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param boolean $detailed
 	 * @return array
 	 */
-	public function readByYear($year, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
+	public function readByYear(int $year, ?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : array {
 
 		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE year LIKE :year';
@@ -380,17 +383,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel(intval($movieid), $title, intval($year), floatval($rating), $poster, $allocine);
 				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
-						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+						array_push($movie->director, new DirectorItemModel(intval($d->id), $d->name, $d->country));
 					}
 					$categories = json_decode($categories);
 					$movie->category = array();
 					foreach ($categories as $c) {
-						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+						array_push($movie->category, new CategoryItemModel(intval($c->id), $c->tag));
 					}
 				}
 				array_push($this->collection, $movie);
@@ -411,7 +414,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param boolean $detailed
 	 * @return array
 	 */
-	public function readByRating($rating, $orderby=null, $limit=null, $offset=null, $detailed=null) : array {
+	public function readByRating(float $rating, ?string $orderby=null, ?int $limit=null, ?int $offset=null, ?bool $detailed=null) : array {
 
 		if (!$detailed) {
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS id as movieid, title, year, rating, poster, allocine FROM ' . self::TABLE . ' WHERE rating LIKE :rating';
@@ -435,17 +438,17 @@ class MovieCollectionModel implements CollectionModelInterface {
 		if ($query->rowCount() > 0) {
 			while ($row = $query->fetch(\PDO::FETCH_ASSOC)) {
 				extract($row);
-				$movie = new MovieItemModel($movieid, $title, $year, $rating, $poster, $allocine);
+				$movie = new MovieItemModel(intval($movieid), $title, intval($year), floatval($rating), $poster, $allocine);
 				if ($detailed) {
 					$directors = json_decode($directors);
 					$movie->director = array();
 					foreach ($directors as $d) {
-						array_push($movie->director, new DirectorItemModel($d->id, $d->name, $d->country));
+						array_push($movie->director, new DirectorItemModel(intval($d->id), $d->name, $d->country));
 					}
 					$categories = json_decode($categories);
 					$movie->category = array();
 					foreach ($categories as $c) {
-						array_push($movie->category, new CategoryItemModel($c->id, $c->tag));
+						array_push($movie->category, new CategoryItemModel(intval($c->id), $c->tag));
 					}
 				}
 				array_push($this->collection, $movie);
@@ -462,7 +465,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param object $content
 	 * @return int|boolean nb de modif ou false
 	 */
-	public function update(object $content) {
+	public function update(object $content) : int|bool {
 
 		try {
 			$query = $this->db->prepare('UPDATE ' . self::TABLE . ' SET title = :title, year = :year, rating = :rating, poster = :poster, allocine = :allocine WHERE id=:id;');
@@ -490,7 +493,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param int $id
 	 * @return int|boolean nb de supression ou false
 	 */
-	public function deleteById($id) {
+	public function deleteById(int $id) : int|bool {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM ' . self::TABLE . ' WHERE id=:id;');
@@ -510,7 +513,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param int $director
 	 * @return int|boolean nb de supression ou false
 	 */
-	public function deleteDirector($movie, $director) {
+	public function deleteDirector(int $movie, int $director) : int|bool {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM moviedirector WHERE movie=:movie AND director=:director;');
@@ -531,7 +534,7 @@ class MovieCollectionModel implements CollectionModelInterface {
 	 * @param int $category
 	 * @return int|boolean nb de supression ou false
 	 */
-	public function deleteCategory($movie, $category) {
+	public function deleteCategory(int $movie, int $category) : int|bool {
 
 		try {
 			$query = $this->db->prepare('DELETE FROM moviecategory WHERE movie=:movie AND category=:category;');

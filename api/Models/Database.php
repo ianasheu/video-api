@@ -5,6 +5,8 @@
  *
  *---------------------------------------------*/
 
+// declare(strict_types=1);
+
 namespace api\Models;
 
 require_once ROOT_PATH . '/Models/database_config.php';
@@ -65,7 +67,7 @@ final class Database {
 	 *
 	 * @return int
 	 */
-	public static function getRowsCount() {
+	public static function getRowsCount() : int {
 		$row = self::$connection->query('SELECT FOUND_ROWS();');
 		$count = $row->fetchColumn();
 		return intval($count);

@@ -22,7 +22,7 @@ interface ControllerInterface {
 	 *
 	 * @return string
 	 */
-	public function getRoute();
+	public function getRoute() : string;
 
 	/*
 	 * Effectuer une requete sur le modele
@@ -31,9 +31,8 @@ interface ControllerInterface {
 	 * @param array $url
 	 * @param array $filter
 	 * @param object $content
-	 * @param boolean $connected
-	 *
+	 * @param bool $connected
 	 * @return array
 	 */
-	public function callModel($method, array $url, array $filter=null, object $content=null, $connected=null) : array;
+	public function callModel(string $method, array $url, ?array $filter=null, ?object $content=null, ?bool $connected=null) : array;
 }
