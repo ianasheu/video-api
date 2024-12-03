@@ -150,8 +150,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
-		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
-		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
+		if ($limit) $query->bindValue('limit', $limit, \PDO::PARAM_INT);
+		if ($offset) $query->bindValue('offset', $offset, \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
@@ -321,8 +321,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 				$query->bindValue("words{$i}", "%{$words[$i]}%");
 			}
 		}
-		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
-		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
+		if ($limit) $query->bindValue('limit', $limit, \PDO::PARAM_INT);
+		if ($offset) $query->bindValue('offset', $offset, \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
@@ -376,8 +376,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
 		$query->bindValue('year', $year);
-		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
-		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
+		if ($limit) $query->bindValue('limit', $limit, \PDO::PARAM_INT);
+		if ($offset) $query->bindValue('offset', $offset, \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
@@ -431,8 +431,8 @@ class MovieCollectionModel implements CollectionModelInterface {
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
 		$query->bindValue('rating', $rating);
-		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
-		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
+		if ($limit) $query->bindValue('limit', $limit, \PDO::PARAM_INT);
+		if ($offset) $query->bindValue('offset', $offset, \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {

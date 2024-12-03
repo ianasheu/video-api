@@ -84,13 +84,22 @@ class MovieController implements ControllerInterface {
 					$orderby = $value;
 					break;
 				case 'limit':
-					$limit = $value;
+					if (!is_numeric($value)) {
+						return [400, 'wrong filter'];
+					}
+					$limit = intval($value);
 					break;
 				case 'offset':
-					$offset = $value;
+					if (!is_numeric($value)) {
+						return [400, 'wrong filter'];
+					}
+					$offset = intval($value);
 					break;
 				case 'detailed':
-					$detailed = $value;
+					if ($value!='true' && $value!='false') {
+						return [400, 'wrong filter'];
+					}
+					$detailed = ($value=='true'?true:false);
 					break;
 			}
 		}
@@ -162,9 +171,8 @@ class MovieController implements ControllerInterface {
 						}
 					} else
 					if (!isset($url[3])) {
-						if ((!$detailed || $detailed=='true' || $detailed=='false')
-							&& !$orderby && !$limit && !$offset) {
-							$this->getById(intval($url[2]), ($detailed=='true'?true:false));
+						if (!$orderby && !$limit && !$offset) {
+							$this->getById(intval($url[2]), $detailed);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -175,10 +183,8 @@ class MovieController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='title') {
 					if (isset($url[2]) && $url[2]!='' && !isset($url[3])) {
 						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) &&
-							(!$detailed || $detailed=='true' || $detailed=='false')) {
-							$this->getByTitle($url[2], $orderby, intval($limit), intval($offset), ($detailed=='true'?true:false));
+							(!$offset || $limit && $offset)) {
+							$this->getByTitle($url[2], $orderby, $limit, $offset, $detailed);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -190,10 +196,8 @@ class MovieController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='year') {
 					if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
 						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) &&
-							(!$detailed || $detailed=='true' || $detailed=='false')) {
-							$this->getByYear(intval($url[2]), $orderby, intval($limit), intval($offset), ($detailed=='true'?true:false));
+							(!$offset || $limit && $offset)) {
+							$this->getByYear(intval($url[2]), $orderby, $limit, $offset, $detailed);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -204,10 +208,8 @@ class MovieController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='rating') {
 					if (isset($url[2]) && $url[2]!='' && is_numeric($url[2]) && !isset($url[3])) {
 						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) &&
-							(!$detailed || $detailed=='true' || $detailed=='false')) {
-							$this->getByRating(floatval($url[2]), $orderby, intval($limit), intval($offset), ($detailed=='true'?true:false));
+							(!$offset || $limit && $offset)) {
+							$this->getByRating(floatval($url[2]), $orderby, $limit, $offset, $detailed);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -217,10 +219,8 @@ class MovieController implements ControllerInterface {
 				} else
 				if (!isset($url[1])) {
 					if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
-						(!$limit || $limit && is_numeric($limit)) &&
-						(!$offset || $limit && $offset && is_numeric($offset)) &&
-						(!$detailed || $detailed=='true' || $detailed=='false')) {
-						$this->getAll($orderby, intval($limit), intval($offset), ($detailed=='true'?true:false));
+						(!$offset || $limit && $offset)) {
+						$this->getAll($orderby, $limit, $offset, $detailed);
 					} else {
 						return [400, 'wrong filter'];
 					}

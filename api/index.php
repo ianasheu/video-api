@@ -1,4 +1,11 @@
 <?php
+/*----------------------------------------------------*
+ * 
+ *                     VIDEO-API
+ * API REST EN PHP POUR BASE DE DONNEES SUR DES FILMS
+ * 
+ *----------------------------------------------------*/
+
 if (!defined('ROOT_PATH')) define('ROOT_PATH', __DIR__);
 
 require_once ROOT_PATH . '/Autoloader.php';

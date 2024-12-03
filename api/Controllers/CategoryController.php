@@ -84,10 +84,16 @@ class CategoryController implements ControllerInterface {
 					$orderby = $value;
 					break;
 				case 'limit':
-					$limit = $value;
+					if (!is_numeric($value)) {
+						return [400, 'wrong filter'];
+					}
+					$limit = intval($value);
 					break;
 				case 'offset':
-					$offset = $value;
+					if (!is_numeric($value)) {
+						return [400, 'wrong filter'];
+					}
+					$offset = intval($value);
 					break;
 			}
 		}
@@ -137,15 +143,14 @@ class CategoryController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2])) {
 					if (isset($url[3]) && $url[3]=='movie' && !isset($url[4])) {
 						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset))) {
-							$this->getMovie(intval($url[2]), $orderby, intval($limit), intval($offset));
+							(!$offset || $limit && $offset)) {
+							$this->getMovie(intval($url[2]), $orderby, $limit, $offset);
 						} else {
 							return [400, 'wrong filter'];
 						}
 					} else
 					if (!isset($url[3])) {
-						if (!$orderby && !$limit && !$offset) {
+						if (!$filter) {
 							$this->getById(intval($url[2]));
 						} else {
 							return [400, 'wrong filter'];
@@ -156,9 +161,8 @@ class CategoryController implements ControllerInterface {
 				} else
 				if (!isset($url[1])) {
 					if ((!$orderby || $orderby && CategoryCollectionModel::existsProperty($orderby)) &&
-						(!$limit || $limit && is_numeric($limit)) &&
-						(!$offset || $limit && $offset && is_numeric($offset))) {
-						$this->getAll($orderby, intval($limit), intval($offset));
+						(!$offset || $limit && $offset)) {
+						$this->getAll($orderby, $limit, $offset);
 					} else {
 						return [400, 'wrong filter'];
 					}

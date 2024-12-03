@@ -85,13 +85,22 @@ class DirectorController implements ControllerInterface {
 					$orderby = $value;
 					break;
 				case 'limit':
-					$limit = $value;
+					if (!is_numeric($value)) {
+						return [400, 'wrong filter'];
+					}
+					$limit = intval($value);
 					break;
 				case 'offset':
-					$offset = $value;
+					if (!is_numeric($value)) {
+						return [400, 'wrong filter'];
+					}
+					$offset = intval($value);
 					break;
 				case 'detailed':
-					$detailed = $value;
+					if ($value!='true' && $value!='false') {
+						return [400, 'wrong filter'];
+					}
+					$detailed = ($value=='true'?true:false);
 					break;
 			}
 		}
@@ -141,17 +150,15 @@ class DirectorController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='id' && isset($url[2]) && $url[2]!='' && is_numeric($url[2])) {
 					if (isset($url[3]) && $url[3]=='movie' && !isset($url[4])) {
 						if ((!$orderby || $orderby && MovieCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) && !$detailed) {
-							$this->getMovie(intval($url[2]), $orderby, intval($limit), intval($offset));
+							(!$offset || $limit && $offset) && !$detailed) {
+							$this->getMovie(intval($url[2]), $orderby, $limit, $offset);
 						} else {
 							return [400, 'wrong filter'];
 						}
 					} else
 					if (!isset($url[3])) {
-						if ((!$detailed || $detailed=='true' || $detailed=='false')
-							&& !$orderby && !$limit && !$offset) {
-							$this->getById(intval($url[2]), ($detailed=='true'?true:false));
+						if (!$orderby && !$limit && !$offset) {
+							$this->getById(intval($url[2]), $detailed);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -162,9 +169,8 @@ class DirectorController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='name') {
 					if (isset($url[2]) && $url[2]!='' && !isset($url[3])) {
 						if ((!$orderby || $orderby && DirectorCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) && !$detailed) {
-							$this->getByName($url[2], $orderby, intval($limit), intval($offset));
+							(!$offset || $limit && $offset) && !$detailed) {
+							$this->getByName($url[2], $orderby, $limit, $offset);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -175,9 +181,8 @@ class DirectorController implements ControllerInterface {
 				if (isset($url[1]) && $url[1]=='country') {
 					if (isset($url[2]) && $url[2]!='' && !isset($url[3])) {
 						if ((!$orderby || $orderby && DirectorCollectionModel::existsProperty($orderby)) &&
-							(!$limit || $limit && is_numeric($limit)) &&
-							(!$offset || $limit && $offset && is_numeric($offset)) && !$detailed) {
-							$this->getByCountry($url[2], $orderby, intval($limit), intval($offset));
+							(!$offset || $limit && $offset) && !$detailed) {
+							$this->getByCountry($url[2], $orderby, $limit, $offset);
 						} else {
 							return [400, 'wrong filter'];
 						}
@@ -187,9 +192,8 @@ class DirectorController implements ControllerInterface {
 				} else
 				if (!isset($url[1])) {
 					if ((!$orderby || $orderby && DirectorCollectionModel::existsProperty($orderby)) &&
-						(!$limit || $limit && is_numeric($limit)) &&
-						(!$offset || $limit && $offset && is_numeric($offset)) && !$detailed) {
-						$this->getAll($orderby, intval($limit), intval($offset));
+						(!$offset || $limit && $offset) && !$detailed) {
+						$this->getAll($orderby, $limit, $offset);
 					} else {
 						return [400, 'wrong filter'];
 					}

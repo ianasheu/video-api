@@ -104,8 +104,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 		$sql = ($limit ? $sql . ' LIMIT :limit' : $sql);
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
-		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
-		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
+		if ($limit) $query->bindValue('limit', $limit, \PDO::PARAM_INT);
+		if ($offset) $query->bindValue('offset', $offset, \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {
@@ -162,8 +162,8 @@ class CategoryCollectionModel implements CollectionModelInterface {
 		$sql = ($offset ? $sql . ' OFFSET :offset' : $sql);
 		$query = $this->db->prepare($sql . ';');
 		$query->bindValue('id', intval($id), \PDO::PARAM_INT);
-		if ($limit) $query->bindValue('limit', intval($limit), \PDO::PARAM_INT);
-		if ($offset) $query->bindValue('offset', intval($offset), \PDO::PARAM_INT);
+		if ($limit) $query->bindValue('limit', $limit, \PDO::PARAM_INT);
+		if ($offset) $query->bindValue('offset', $offset, \PDO::PARAM_INT);
 		$query->execute();
 
 		if ($query->rowCount() > 0) {

@@ -82,7 +82,7 @@ Afin de limiter les messages d'erreur, la base de données est configurée pour 
 
 Commentaires : Le type des propriétés de classe n'est pas renseigné s'il est scalaire (booléen, entier, nombre décimal, chaîne de caractères). En revanche, il est renseigné si c'est un tableau ou un objet. Il en sera de même pour les types des arguments des méthodes de classe ainsi que les types de valeur de retour. De plus, le type de retour d'une méthode qui ne retourne rien sera indique avec void (sauf pour les constructeurs). C'est proche du mode strict.
 
-Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive les fichiers Controllers/users_config.php et Models/db_config_ovh.php. De plus, sont aussi abscents du diagramme les fichiers .htaccess, index.php, Autoloader.php, Models/MovieItemModel.php, Models/DirectorItemModel.php, Models/CategoryItemModel.php et Views/json_view.php.
+Limitations : Il n'y a pas de version ni de cache. Sont absents de l'archive les fichiers Controllers/users_config.php et Models/db_config_ovh.php. De plus, sont aussi absents du diagramme les fichiers .htaccess, index.php, Autoloader.php, Models/MovieItemModel.php, Models/DirectorItemModel.php, Models/CategoryItemModel.php et Views/json_view.php.
 
 > sources : [video-api-php.zip](https://www.ianasheu.com/video/video-api-php.zip)
 
@@ -101,7 +101,7 @@ Limitations : Il n'y a pas de version ni de cache. Sont abscents de l'archive le
 > - director
 > - category
 
-Une clé API est obligatoire et doit être renseignée dans le header X-Api-Key. De plus, une identification basique est demandée pour les methods autres que GET. Un content au format json est nécessaire pour les methods POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.
+Une clé API est obligatoire et doit être renseignée dans le header X-Api-Key. De plus, une identification basique est demandée pour les méthodes autres que GET. Un content au format json est nécessaire pour les méthodes POST et PUT. La valeur renseignée pour l'id, que ce soit dans l'url ou dans le content, doit être numérique.
 
 #### FILTRES
 > - orderby
@@ -109,7 +109,7 @@ Une clé API est obligatoire et doit être renseignée dans le header X-Api-Key.
 > - offset
 > - detailed
 
-Utilisable pour les methods GET. Le critère passé à orderby doit être une propriété de la ressource avec laquelle il est utilisé. Les valeurs passées à limit et offset doivent être numériques. Les valeurs passées à detailed doivent être true ou false.
+Utilisable pour les méthodes GET. Le critère passé à orderby doit être une propriété de la ressource avec laquelle il est utilisé. Les valeurs passées à limit et offset doivent être numériques. Les valeurs passées à detailed doivent être true ou false.
 
 ## MOVIE
 

@@ -5,6 +5,8 @@
  * 
  *------------------------------------*/
 
+declare(strict_types=1);
+
 namespace api;
 
 final class Autoloader {
@@ -24,7 +26,7 @@ final class Autoloader {
 	 *
 	 * @param string $class
 	 */
-	private static function autoload($class) {
+	private static function autoload($class) : void {
 		$class = str_replace(__NAMESPACE__ . '\\', '', $class);
 		$class = str_replace('\\', '/', $class);
 		$file = __DIR__ . "/{$class}.php";
