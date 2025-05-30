@@ -42,7 +42,7 @@ try {
 
 } catch (\Exception $exception) {
 
-	if(!isset($response_code)) $response_code = 400;
+	if (!isset($response_code)) $response_code = 400;
 	$response_content = $exception->getMessage();
 
 }
