@@ -79,7 +79,7 @@ class CategoryController implements ControllerInterface {
 
 			unset($filterAvailable[array_search($key, $filterAvailable)]);
 
-			switch ($key){
+			switch ($key) {
 				case 'orderby':
 					$orderby = $value;
 					break;
@@ -107,7 +107,7 @@ class CategoryController implements ControllerInterface {
 		}
 
 		if (!$connected) {
-			if($method != 'GET') {
+			if ($method != 'GET') {
 				return [401];
 			} else {
 				return [403];
