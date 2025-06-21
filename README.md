@@ -84,7 +84,7 @@ Commentaires : Le type des propriétés de classe n'est pas renseigné s'il est 
 
 Limitations : Il n'y a pas de version ni de cache. Sont absents de l'archive les fichiers Controllers/users_config.php et Models/db_config_ovh.php. De plus, sont aussi absents du diagramme les fichiers .htaccess, index.php, Autoloader.php, Models/MovieItemModel.php, Models/DirectorItemModel.php, Models/CategoryItemModel.php et Views/json_view.php.
 
-> sources : [video-api-php.zip](https://www.ianasheu.com/video/video-api-php.zip)
+> sources : [video-api-main.zip](https://github.com/ianasheu/video-api/archive/refs/heads/main.zip)
 
 
 ## DESCRIPTION DES APPELS
